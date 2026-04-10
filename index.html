@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cronoanálise de Agregação de Valor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: { extend: { fontFamily: { sans: ['Inter', 'sans-serif'] } } }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+    </style>
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+            transition: background-color 0.3s;
+            min-height: 100vh;
+            display: flex;
+            align-items: flex-start;
+            justify-content: center;
+            padding: 1rem;
+        }
+        #main-layout-container {
+            width: 100%;
+            max-width: 1400px;
+            display: flex;
+            gap: 1.5rem;
+            align-items: flex-start;
+            padding: 0;
+            margin: 0 auto;
+        }
+        #video-column {
+            flex: 2;
+            min-width: 60%;
+            max-width: 70%;
+            min-height: calc(100vh - 2rem);
+            display: flex;
+            flex-direction: column;
+        }
+        #app-container {
+            flex: 1;
+            min-width: 300px;
+            max-width: 450px;
+            padding: 1.5rem;
+        }
+        #video-area {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        #analysis-video {
+            width: 100%;
+            flex-grow: 1;
+            max-height: 70vh;
+        }
+        .indicator-button {
+            transition: all 0.1s;
+            transform: scale(1);
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1), 0 2px 4px -2px rgba(0,0,0,0.06);
+            border-bottom: 4px solid;
+        }
+        .indicator-button:hover:not(.active) {
+            transform: scale(1.02);
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1), 0 4px 6px -4px rgba(0,0,0,0.1);
+            border-bottom-width: 8px;
+        }
+        .indicator-button.active {
+            transform: scale(1.05);
+            box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2), 0 8px 10px -6px rgba(0,0,0,0.1);
+            border-bottom-width: 8px;
+            opacity: 1;
+        }
+        #mini-display {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 99999;
+            padding: 15px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+            transition: all 0.3s;
+            opacity: 1;
+            font-family: 'Inter', sans-serif;
+            font-weight: 700;
+            text-align: center;
+            touch-action: none;
+            cursor: pointer;
+        }
+        #mini-display.teleporting {
+            box-shadow: 0 0 0 5px rgba(255,255,0,0.8), 0 0 15px rgba(255,255,0,0.6);
+            opacity: 0.8;
+            animation: pulse 1s infinite;
+        }
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.02); }
+            100% { transform: scale(1); }
+        }
+        #mini-display.fullscreen-active { z-index: 2147483647 !important; }
+        #mini-display.minimized {
+            width: 50px; height: 50px; padding: 0;
+            overflow: hidden; border-radius: 8px;
+            font-size: 1.5rem; line-height: 50px;
+        }
+        #mini-display.hidden-fully { display: none !important; }
+        #mini-display.size-small  { width: 150px; padding: 5px 10px; }
+        #mini-display.size-medium { width: 210px; padding: 10px 15px; }
+        #mini-display.size-large  { width: 280px; padding: 15px 20px; }
+        .drag-handle { cursor: pointer; padding: 2px 0; }
+        #excel-print-data { display: none; margin-top: 10px; }
+        #excel-copy-area .excel-input-wrapper { display: flex; }
+        #excel-copy-area #excel-data,
+        #excel-copy-area #excel-times { width: 100%; }
+        .log-list {
+            max-height: 300px; overflow-y: auto;
+            border: 1px solid #e5e7eb; border-radius: 8px;
+        }
+        @media print {
+            body { visibility: hidden; background-color: white !important; }
+            #app-container, .no-print, #mini-display { display: none !important; }
+            #print-area, #print-area * { visibility: visible !important; }
+            #print-area { display: block !important; position: static !important; width: 100%; margin: 0; padding: 0; }
+            .printable-content { width: 100%; max-width: 800px; margin: 0 auto; padding: 40px; box-sizing: border-box; }
+            table { width: 100%; page-break-inside: auto; }
+            tr { page-break-inside: avoid; page-break-after: auto; }
+            .printable-content .no-print-element { display: none !important; }
+            #print-area #excel-print-data { display: block !important; visibility: visible !important; font-size: 0.9rem; color: #4b5563; padding: 10px; border: 1px solid #d1d5db; border-radius: 6px; background-color: #f3f4f6; }
+            #print-area #excel-print-data .excel-value { font-family: monospace; font-weight: 700; display: block; margin-top: 5px; }
+        }
+        .drag-over {
+            border: 3px dashed #10b981;
+            box-shadow: 0 0 10px rgba(16,185,129,0.7);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex items-center justify-center p-4">
+
+    <div id="mini-display" class="text-white font-mono font-bold text-xl text-center"></div>
+
+    <div id="main-layout-container">
+
+        <!-- COLUNA DO VÍDEO -->
+        <div id="video-column">
+            <div id="video-area" class="bg-white p-4 rounded-xl shadow-2xl transition-all duration-300 h-full">
+                <h2 class="text-xl font-bold text-gray-700 mb-3 flex justify-between items-center">
+                    Vídeo de Análise
+                </h2>
+                <div class="flex items-center space-x-3 mb-4">
+                    <input type="url" id="video-url-input"
+                        placeholder="Cole a URL de streaming (OneDrive/SharePoint) aqui..."
+                        class="flex-grow p-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-blue-500">
+                    <button id="btn-load-url"
+                        class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600 transition-colors"
+                        title="Carregar Vídeo da URL">CARREGAR</button>
+                    <button id="btn-remove-video"
+                        class="bg-red-400 text-white p-2 rounded-lg hover:bg-red-500 transition-colors"
+                        title="Remover Vídeo Carregado">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                            stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                </div>
+                <input type="file" id="video-file-input" accept="video/*"
+                    class="flex-grow p-2 border border-gray-300 rounded-lg bg-white cursor-pointer mb-4">
+                <video id="analysis-video" controls class="w-full rounded-lg shadow-md"
+                    style="max-height: 70vh; display: none;"></video>
+                <p id="video-status" class="text-center text-sm text-gray-500 mt-2">
+                    Cole a URL de streaming do OneDrive ou carregue um arquivo local, ou arraste e solte um vídeo aqui.
+                </p>
+            </div>
+
+            <!-- FERRAMENTA DE CONSULTA DE CLASSIFICAÇÃO -->
+            <div id="classification-query-tool" class="bg-gray-100 p-4 rounded-xl shadow-lg mt-4">
+                <h3 class="text-lg font-bold text-gray-700 mb-3 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2" stroke="currentColor" class="w-6 h-6 mr-2 text-teal-600">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M9.813 15.904L9 18l1.659-.972c.389-.22.753-.526 1.096-.893L19.5 7.5l-2.484-2.484L12 11.107c-.367.343-.673.707-.893 1.096L9.813 15.904z"/>
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M14.25 10.5L10.5 14.25m-2.92-2.92l5.75-5.75m-6.67 6.67l-5.75 5.75"/>
+                    </svg>
+                    Consulta de Classificação (VAA / SVA / NVA)
+                </h3>
+                <div class="flex space-x-2 mb-3">
+                    <input type="text" id="query-input" placeholder="Ex: Apertar parafuso..."
+                        class="flex-grow p-2 border border-gray-300 rounded-lg bg-white focus:ring-2 focus:ring-teal-500"
+                        title="Descreva a atividade a ser classificada">
+                    <button id="btn-classify"
+                        class="bg-teal-500 text-white p-2 rounded-lg font-semibold hover:bg-teal-600 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300"
+                        title="Consultar a classificação">CLASSIFICAR</button>
+                </div>
+                <div id="classification-result"
+                    class="p-3 bg-white rounded-lg border border-gray-300 min-h-[50px]">
+                    <p class="text-sm text-gray-500">O resultado da classificação aparecerá aqui.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- COLUNA DO CRONÔMETRO -->
+        <!-- MELHORIA 1: Grid de botões de classificação agora com 3 colunas (AJUSTE removido) -->
+        <div id="app-container" class="bg-white rounded-xl shadow-2xl transition-all duration-300">
+            <h1 class="text-xl font-extrabold text-gray-800 text-center mb-4">Cronoanálise de Valor Agregado</h1>
+
+            <div class="text-center mb-4">
+                <div id="chronometer-display"
+                    class="text-5xl font-mono font-bold text-gray-900 bg-gray-100 p-4 rounded-xl shadow-inner transition-colors duration-200">
+                    00:00:00.0
+                </div>
+                <p id="activity-status" class="mt-2 text-md font-semibold transition-all duration-300">
+                    Cronômetro pronto. Inicie o vídeo ou pressione PAUSE.
+                </p>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 mb-4">
+                <button id="btn-pause"
+                    class="bg-blue-500 text-white p-3 rounded-xl font-semibold hover:bg-blue-600 transition-colors focus:outline-none focus:ring-2 focus:ring-blue-300"
+                    title="Pause/Despause (Tecla: Barra de Espaço)">
+                    <span id="pause-text">PAUSAR</span> (Espaço)
+                </button>
+                <button id="btn-2x"
+                    class="bg-purple-500 text-white p-3 rounded-xl font-semibold hover:bg-purple-600 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-300"
+                    title="Multiplicador de Velocidade (Tecla: X)">
+                    Velocidade: <span id="speed-text">1x</span> (X)
+                </button>
+                <button id="btn-reset"
+                    class="bg-gray-400 text-gray-800 p-3 rounded-xl font-semibold hover:bg-gray-500 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300"
+                    title="Reiniciar Cronômetro (Tecla: Shift)">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"
+                        stroke-width="2" stroke="currentColor" class="w-5 h-5 inline-block align-text-bottom">
+                        <path stroke-linecap="round" stroke-linejoin="round"
+                            d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181-3.181m0 0l-3.181-3.181m3.181 3.181l-3.181 3.181m3.181-3.181l3.181 3.181M12 21a9 9 0 100-18 9 9 0 000 18z"/>
+                    </svg>
+                    REINICIAR (Shift)
+                </button>
+                <button id="btn-report"
+                    class="bg-teal-500 text-white p-3 rounded-xl font-semibold hover:bg-teal-600 transition-colors focus:outline-none focus:ring-2 focus:ring-teal-300"
+                    title="Gerar Relatório de Classificação (Tecla: Enter)">
+                    GERAR RELATÓRIO (Enter)
+                </button>
+            </div>
+
+            <!-- MELHORIA 1: 3 colunas — AJUSTE completamente removido -->
+            <div class="grid grid-cols-3 gap-3 mb-4">
+                <button id="btn-nva" data-activity="NVA"
+                    class="indicator-button bg-red-500 text-white p-3 rounded-xl text-md font-bold uppercase hover:bg-red-600 border-red-700 focus:outline-none focus:ring-4 focus:ring-red-300"
+                    title="Não Agrega Valor (Tecla: 1)">
+                    NVA <span class="text-sm font-normal">(1)</span>
+                </button>
+                <button id="btn-sva" data-activity="SVA"
+                    class="indicator-button bg-yellow-500 text-gray-900 p-3 rounded-xl text-md font-bold uppercase hover:bg-yellow-600 border-yellow-700 focus:outline-none focus:ring-4 focus:ring-yellow-300"
+                    title="Suporte Agrega Valor (Tecla: 2)">
+                    SVA <span class="text-sm font-normal">(2)</span>
+                </button>
+                <button id="btn-vaa" data-activity="VAA"
+                    class="indicator-button bg-green-500 text-white p-3 rounded-xl text-md font-bold uppercase hover:bg-green-600 border-green-700 focus:outline-none focus:ring-4 focus:ring-green-300"
+                    title="Valor Agregado (Tecla: 3)">
+                    VAA <span class="text-sm font-normal">(3)</span>
+                </button>
+            </div>
+
+            <div class="text-center mt-2 mb-4">
+                <button id="btn-toggle-mini-display"
+                    class="text-sm text-gray-500 hover:text-gray-800 transition-colors"
+                    onclick="toggleMiniDisplayHidden()">
+                    <span id="mini-display-toggle-text">Pressione F para mostrar ou ocultar a Mini-Dashboard</span>
+                </button>
+            </div>
+
+            <!-- MELHORIA 1: Painel de tempos acumulados agora com 3 colunas -->
+            <div class="bg-gray-50 p-4 rounded-xl shadow-md mt-4">
+                <h3 class="text-md font-semibold text-gray-700 mb-3">Tempos Acumulados (1x):</h3>
+                <div class="grid grid-cols-3 gap-4 text-center text-sm">
+                    <div class="p-2 bg-red-100 rounded-lg">
+                        <p class="font-medium text-red-700">NVA</p>
+                        <p id="nva-time-display" class="font-mono text-lg text-red-900">00:00:00</p>
+                    </div>
+                    <div class="p-2 bg-yellow-100 rounded-lg">
+                        <p class="font-medium text-yellow-700">SVA</p>
+                        <p id="sva-time-display" class="font-mono text-lg text-yellow-900">00:00:00</p>
+                    </div>
+                    <div class="p-2 bg-green-100 rounded-lg">
+                        <p class="font-medium text-green-700">VAA</p>
+                        <p id="vaa-time-display" class="font-mono text-lg text-green-900">00:00:00</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="print-area" class="hidden"></div>
+
+    <!-- MODAL DE RELATÓRIO -->
+    <div id="message-box"
+        class="fixed inset-0 bg-gray-900 bg-opacity-75 hidden items-center justify-center p-4 z-50 transition-opacity duration-300">
+        <div id="report-modal-content"
+            class="bg-white rounded-xl shadow-2xl p-8 w-full max-w-4xl report-container"
+            style="max-height: 90vh; overflow-y: auto;">
+
+            <h2 class="text-3xl font-extrabold text-gray-800 mb-4 text-center">Relatório de Cronoanálise</h2>
+
+            <div id="tab-nav" class="flex border-b border-gray-200 mb-4 no-print">
+                <button id="tab-report" data-tab="report"
+                    class="py-2 px-4 text-lg font-semibold border-b-2 border-teal-500 text-teal-600 focus:outline-none transition-colors">
+                    Relatório Atual
+                </button>
+                <button id="tab-history" data-tab="history"
+                    class="py-2 px-4 text-lg font-semibold border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:outline-none transition-colors">
+                    Histórico de Medições
+                </button>
+                <button id="tab-log" data-tab="log"
+                    class="py-2 px-4 text-lg font-semibold border-b-2 border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700 focus:outline-none transition-colors">
+                    Log de Eventos
+                </button>
+            </div>
+
+            <div id="report-tab-content">
+                <div class="mb-6">
+                    <h3 class="text-xl font-bold mb-3 text-gray-700">Resultados Detalhados (1x)</h3>
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-gray-100">
+                                <th class="p-3 font-semibold text-sm uppercase text-gray-600 border-b">Indicador</th>
+                                <th class="p-3 font-semibold text-sm uppercase text-gray-600 border-b">Tempo Acumulado</th>
+                                <th class="p-3 font-semibold text-sm uppercase text-gray-600 border-b">Porcentagem</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="hover:bg-red-50/50 transition-colors">
+                                <td class="p-3 font-medium text-red-600">NVA (Não Agrega Valor)</td>
+                                <td id="rep-nva-time" class="p-3 font-mono">00:00:00</td>
+                                <td id="rep-nva-percent" class="p-3 font-mono">0%</td>
+                            </tr>
+                            <tr class="hover:bg-yellow-50/50 transition-colors">
+                                <td class="p-3 font-medium text-yellow-600">SVA (Suporte Agrega Valor)</td>
+                                <td id="rep-sva-time" class="p-3 font-mono">00:00:00</td>
+                                <td id="rep-sva-percent" class="p-3 font-mono">0%</td>
+                            </tr>
+                            <tr class="hover:bg-green-50/50 transition-colors">
+                                <td class="p-3 font-medium text-green-600">VAA (Valor Agregado)</td>
+                                <td id="rep-vaa-time" class="p-3 font-mono">00:00:00</td>
+                                <td id="rep-vaa-percent" class="p-3 font-mono">0%</td>
+                            </tr>
+                            <!-- MELHORIA 1: Linha de AJUSTE removida da tabela -->
+                            <tr class="bg-gray-200 font-bold">
+                                <td class="p-3 text-gray-800">TOTAL</td>
+                                <td id="rep-total-time" class="p-3 font-mono text-lg">00:00:00</td>
+                                <td class="p-3 font-mono">100%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- MELHORIAS 2 e 3: Duas caixas de exportação com labels de identificação -->
+                <div id="excel-copy-area" class="bg-blue-50 p-4 rounded-lg border border-blue-200 mb-6 no-print">
+                    <h4 class="text-lg font-bold text-blue-700 mb-3 text-center">Para Planilha de Cronoanálise:</h4>
+
+                    <!-- MELHORIA 3: Label acima da caixa de porcentagem -->
+                    <p class="text-sm font-semibold text-gray-600 mb-1">
+                        Porcentagens &nbsp;
+                        <span class="text-red-600">NVA</span> |
+                        <span class="text-yellow-600">SVA</span> |
+                        <span class="text-green-600">VAA</span>
+                    </p>
+                    <!-- MELHORIA 2: Primeira caixa — Porcentagens -->
+                    <div class="flex items-center space-x-2 mb-4 excel-input-wrapper">
+                        <input type="text" id="excel-data" readonly
+                            class="flex-grow font-mono text-base bg-white p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                            value="0% 0% 0%">
+                        <button id="btn-copy-excel"
+                            class="bg-blue-600 text-white p-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors no-print">
+                            Copiar
+                        </button>
+                    </div>
+
+                    <!-- MELHORIA 3: Label acima da caixa de tempos brutos -->
+                    <p class="text-sm font-semibold text-gray-600 mb-1">
+                        Tempos Brutos &nbsp;
+                        <span class="text-red-600">NVA</span> |
+                        <span class="text-yellow-600">SVA</span> |
+                        <span class="text-green-600">VAA</span>
+                    </p>
+                    <!-- MELHORIA 2: Segunda caixa — Tempos Brutos -->
+                    <div class="flex items-center space-x-2 excel-input-wrapper">
+                        <input type="text" id="excel-times" readonly
+                            class="flex-grow font-mono text-base bg-white p-2 rounded border border-gray-300 focus:ring-2 focus:ring-blue-500"
+                            value="00:00:00 00:00:00 00:00:00">
+                        <button id="btn-copy-times"
+                            class="bg-blue-600 text-white p-2 rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors no-print">
+                            Copiar
+                        </button>
+                    </div>
+
+                    <div id="excel-print-data">
+                        <p>Dados para Planilha (Porcentagens NVA | SVA | VAA):</p>
+                        <span class="excel-value text-base"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div id="history-tab-content" class="hidden">
+                <h3 class="text-xl font-bold mb-3 text-gray-700">Medições Anteriores</h3>
+                <div id="history-list" class="space-y-4">
+                    <p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">Nenhuma medição salva ainda.</p>
+                </div>
+            </div>
+
+            <div id="log-tab-content" class="hidden">
+                <h3 class="text-xl font-bold mb-3 text-gray-700">Log Detalhado do Cronômetro</h3>
+                <p class="text-sm text-gray-500 mb-3">
+                    Este log registra cada início e fim de classificação.
+                    Use <span class="font-mono bg-gray-200 px-1 rounded">Ctrl + Z</span> para desfazer o último evento.
+                </p>
+                <div id="current-log-list" class="log-list p-3 bg-white">
+                    <p class="text-gray-500 text-center text-sm">Nenhum evento de classificação registrado.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end space-x-3 mt-6 no-print">
+                <button id="btn-print-report"
+                    class="bg-yellow-500 text-white p-3 rounded-xl font-semibold hover:bg-yellow-600 transition-colors focus:outline-none focus:ring-2 focus:ring-yellow-300">
+                    Salvar como PDF / Imprimir
+                </button>
+                <button id="btn-close-report"
+                    class="bg-gray-500 text-white p-3 rounded-xl font-semibold hover:bg-gray-600 transition-colors focus:outline-none focus:ring-2 focus:ring-gray-300">
+                    Fechar Relatório
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <script>
+        // =====================================================================
+        // ESTADO
+        // MELHORIA 1: Todas as variáveis de ajusteTime removidas
+        // =====================================================================
+        let startTime = 0;
+        let totalTime = 0;
+        let nvaTime = 0;
+        let svaTime = 0;
+        let vaaTime = 0;
+
+        let isRunning = false;
+        let isPaused = true;
+        let isDoubleSpeed = false;
+        let isMiniDisplayMinimized = false;
+        let isMiniDisplayHidden = false;
+        let currentActivity = null;
+        let currentSizeIndex = 2;
+        const MINI_DISPLAY_SIZES = ['size-small', 'size-medium', 'size-large'];
+
+        let activityLog = [];
+        let lastKnownActivity = null;
+
+        const classificationStartPoints = { NVA: [], SVA: [], VAA: [] };
+
+        let intervalId = null;
+        const UPDATE_INTERVAL_MS = 100;
+        let currentVideoFileName = "AnaliseSemVideo";
+        let measurementsHistory = [];
+        let historyCounter = 1;
+        let isTeleporting = false;
+
+        // =====================================================================
+        // ELEMENTOS DOM (fora do modal)
+        // =====================================================================
+        const display           = document.getElementById('chronometer-display');
+        const statusText        = document.getElementById('activity-status');
+        const btnPause          = document.getElementById('btn-pause');
+        const pauseText         = document.getElementById('pause-text');
+        const btn2x             = document.getElementById('btn-2x');
+        const speedText         = document.getElementById('speed-text');
+        const messageBox        = document.getElementById('message-box');
+        const reportModalContent= document.getElementById('report-modal-content');
+        const printArea         = document.getElementById('print-area');
+        const videoElement      = document.getElementById('analysis-video');
+        const videoStatus       = document.getElementById('video-status');
+        const videoUrlInput     = document.getElementById('video-url-input');
+        const btnLoadUrl        = document.getElementById('btn-load-url');
+        const miniDisplay       = document.getElementById('mini-display');
+        const btnToggleMini     = document.getElementById('btn-toggle-mini-display');
+        const videoInput        = document.getElementById('video-file-input');
+        const videoArea         = document.getElementById('video-area');
+
+        let excelPrintDataElement = null;
+
+        // Elementos internos ao modal (podem ser recriados)
+        let excelDataInput  = document.getElementById('excel-data');
+        let excelTimesInput = document.getElementById('excel-times');
+        let reportTab       = document.getElementById('tab-report');
+        let historyTab      = document.getElementById('tab-history');
+        let logTab          = document.getElementById('tab-log');
+        let reportTabContent  = document.getElementById('report-tab-content');
+        let historyTabContent = document.getElementById('history-tab-content');
+        let logTabContent     = document.getElementById('log-tab-content');
+        let historyList       = document.getElementById('history-list');
+        let currentLogList    = document.getElementById('current-log-list');
+
+        let originalReportHTML = reportModalContent.innerHTML;
+        let activeTab = 'report';
+
+        // =====================================================================
+        // BASE DE CONHECIMENTO PARA CLASSIFICAÇÃO
+        // =====================================================================
+        const classificationKnowledge = {
+            VAA: {
+                macros: ['Transformação'],
+                details: [
+                    'dobrar', 'cortar', 'furar', 'parafusar', 'encaixar', 'soldar', 'colar', 'inserir',
+                    'identificar produto', 'pintar', 'juntar', 'acoplar', 'unir', 'engatar', 'conectar',
+                    'montar', 'vedar', 'montagem', 'fixação', 'junção', 'tratamento', 'alteração',
+                    'moldagem', 'apertar porca', 'rosquear', 'instalar', 'colocar vedação', 'aplicar adesivo',
+                    'passar cola', 'polir', 'lixar', 'desbaste', 'soldagem', 'remover rebarba'
+                ]
+            },
+            SVAA: {
+                macros: ['Picking/Supply (SVA)', 'Qualidade (Necessária)'],
+                details: [
+                    'segurar', 'pegar', 'posicionar', 'martelar', 'inspecionar', 'testar', 'calibrar',
+                    'abastecer', 'separar', 'checar', 'etiquetar', 'lubrificar', 'limpar superfície',
+                    'passar graxa', 'proteger', 'contar peças', 'mover carrinho', 'transportar palete',
+                    'buscar material', 'levar ferramenta', 'desempilhar', 'colocar no gabarito',
+                    'realizar medição', 'conferir torque', 'verificar lista', 'aplicar lubrificante',
+                    'testar funcionalidade', 'verificar progressivo'
+                ]
+            },
+            NVAA: {
+                macros: ['Desbalanceamento', 'Fator de Fadiga', 'Qualidade (desnecessária)', 'Outros'],
+                details: [
+                    'desembalar', 'abrir', 'remover excesso', 'desmontar', 'mascarar', 'buscar',
+                    'levar', 'procurar', 'curvar', 'levantar', 'sentar', 'ficar', 'esperar',
+                    'recontar', 'retrabalho', 'alinhar', 'espera', 'movimentar', 'andar',
+                    'icamento', 'ajustes', 'limpeza', 'registro', 'ler observação'
+                ]
+            }
+        };
+
+        // =====================================================================
+        // FUNÇÕES UTILITÁRIAS
+        // =====================================================================
+        function normalizeText(text) {
+            return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+                .replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g, "").trim();
+        }
+
+        function classifyActivity(query) {
+            const normalizedQuery = normalizeText(query);
+            const resultDiv = document.getElementById('classification-result');
+            if (normalizedQuery.length < 3) {
+                resultDiv.innerHTML = `<p class="text-red-500 font-semibold">Por favor, insira uma descrição mais detalhada.</p>`;
+                return;
+            }
+            let bestMatch = null;
+            let bestCategory = null;
+            for (const category in classificationKnowledge) {
+                const details = classificationKnowledge[category].details;
+                const macros  = classificationKnowledge[category].macros;
+                const detailMatch = details.find(d => normalizedQuery.includes(normalizeText(d)));
+                if (detailMatch) { bestMatch = `Termo chave: <strong>"${detailMatch}"</strong> (Classificação Detalhada).`; bestCategory = category; break; }
+                const macroMatch = macros.find(m => normalizedQuery.includes(normalizeText(m)));
+                if (!bestCategory && macroMatch) { bestMatch = `Termo chave: <strong>"${macroMatch}"</strong> (Classificação Macro).`; bestCategory = category; }
+            }
+            if (!bestCategory) {
+                if (normalizedQuery.includes('lubrificar') || normalizedQuery.includes('graxa') || normalizedQuery.includes('medicao')) {
+                    bestCategory = 'SVAA'; bestMatch = 'Inferido: atividade de <strong>inspeção/lubrificação</strong> → <strong>Suporte (SVAA)</strong>.';
+                } else if (normalizedQuery.includes('rebarba') || normalizedQuery.includes('remover e limpar')) {
+                    bestCategory = 'VAA'; bestMatch = 'Inferido: <strong>remoção de rebarba</strong> → <strong>Transformação (VAA)</strong>.';
+                } else if (normalizedQuery.includes('apertar') || normalizedQuery.includes('acoplar') || normalizedQuery.includes('juntar')) {
+                    bestCategory = 'VAA'; bestMatch = 'Inferido: <strong>apertar/juntar/acoplar</strong> → <strong>Transformação (VAA)</strong>.';
+                } else {
+                    bestCategory = 'NVAA'; bestMatch = 'Sem correspondência direta. Por padrão Lean: <strong>Não Agrega Valor (NVAA)</strong>.';
+                }
+            }
+            const colorMap = { VAA: 'text-green-600 bg-green-100 border-green-300', SVAA: 'text-yellow-700 bg-yellow-100 border-yellow-300', NVAA: 'text-red-600 bg-red-100 border-red-300' };
+            resultDiv.innerHTML = `<div class="p-3 border-2 ${colorMap[bestCategory]} rounded-lg"><p class="text-xl font-extrabold mb-1">Classificação: <strong>${bestCategory}</strong></p><p class="text-sm">${bestMatch}</p></div>`;
+            document.getElementById('query-input').blur();
+        }
+
+        function attachClassificationListeners() {
+            const btnClassify = document.getElementById('btn-classify');
+            const queryInput  = document.getElementById('query-input');
+            if (btnClassify && queryInput) {
+                btnClassify.addEventListener('click', () => classifyActivity(queryInput.value));
+                queryInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); classifyActivity(queryInput.value); } });
+            }
+        }
+
+        // =====================================================================
+        // PERSISTÊNCIA
+        // MELHORIA 1: Campos de ajuste removidos do saveState/loadState
+        // =====================================================================
+        function saveState() {
+            const state = {
+                totalTime, nvaTime, svaTime, vaaTime,
+                isDoubleSpeed, currentActivity,
+                measurementsHistory, historyCounter, activityLog, lastKnownActivity,
+                currentVideoFileName
+            };
+            localStorage.setItem('cronoState', JSON.stringify(state));
+        }
+
+        function loadState() {
+            const stateJson = localStorage.getItem('cronoState');
+            if (stateJson) {
+                const state = JSON.parse(stateJson);
+                totalTime   = state.totalTime   || 0;
+                nvaTime     = state.nvaTime     || 0;
+                svaTime     = state.svaTime     || 0;
+                vaaTime     = state.vaaTime     || 0;
+                isDoubleSpeed       = state.isDoubleSpeed       || false;
+                currentActivity     = state.currentActivity     || null;
+                measurementsHistory = state.measurementsHistory || [];
+                historyCounter      = state.historyCounter      || 1;
+                activityLog         = state.activityLog         || [];
+                lastKnownActivity   = state.lastKnownActivity   || null;
+                currentVideoFileName = state.currentVideoFileName || "AnaliseSemVideo";
+                if (state.totalTime > 0) { isPaused = true; isRunning = false; }
+                updateDisplay(); renderHistory(); renderLog();
+                return true;
+            }
+            return false;
+        }
+
+        // =====================================================================
+        // FORMATAÇÃO DE TEMPO
+        // =====================================================================
+        function formatTime(ms) {
+            if (ms < 0) ms = 0;
+            const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+            const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
+            const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+            const t = String(Math.floor((ms % 1000) / 100));
+            return `${h}:${m}:${s}.${t}`;
+        }
+
+        function formatTimeSimple(ms) { return formatTime(ms).slice(0, -2); }
+
+        function formatMiniDisplayTime(ms, sizeIndex) {
+            if (ms < 0) ms = 0;
+            const h = String(Math.floor(ms / 3600000)).padStart(2, '0');
+            const m = String(Math.floor((ms % 3600000) / 60000)).padStart(2, '0');
+            const s = String(Math.floor((ms % 60000) / 1000)).padStart(2, '0');
+            const t = String(Math.floor((ms % 1000) / 100));
+            if (sizeIndex === 2) return `${h}:${m}:${s}.${t}`;
+            if (sizeIndex === 1) return `${h}:${m}:${s}`;
+            const tot = Math.floor(ms / 3600000) * 60 + Math.floor((ms % 3600000) / 60000) + (Math.floor((ms % 60000) / 1000) >= 30 ? 1 : 0);
+            return `${String(Math.floor(tot/60)).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+        }
+
+        // =====================================================================
+        // MINI DISPLAY
+        // =====================================================================
+        function toggleMiniDisplayMinimized() {
+            isMiniDisplayMinimized = !isMiniDisplayMinimized;
+            miniDisplay.classList.toggle('minimized', isMiniDisplayMinimized);
+            updateDisplay(); saveState();
+        }
+
+        function toggleMiniDisplayHidden() {
+            isMiniDisplayHidden = !isMiniDisplayHidden;
+            miniDisplay.classList.toggle('hidden-fully', isMiniDisplayHidden);
+            const txt = document.getElementById('mini-display-toggle-text');
+            if (txt) txt.textContent = isMiniDisplayHidden ? 'Mostrar Mini-Dashboard' : 'Pressione F para mostrar ou ocultar a Mini-Dashboard';
+            updateDisplay(); saveState();
+        }
+
+        function changeMiniDisplaySize(direction) {
+            const newIndex = currentSizeIndex + direction;
+            if (newIndex >= 0 && newIndex <= 2) {
+                miniDisplay.classList.remove(...MINI_DISPLAY_SIZES);
+                currentSizeIndex = newIndex;
+                miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);
+                updateDisplay(); saveState();
+            }
+        }
+
+        function moveMiniDisplay(dx, dy) {
+            if (miniDisplay.style.right !== 'auto' || miniDisplay.style.bottom !== 'auto') {
+                const rect = miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left   = `${rect.left}px`;
+                miniDisplay.style.top    = `${rect.top}px`;
+                miniDisplay.style.right  = 'auto';
+                miniDisplay.style.bottom = 'auto';
+            }
+            let newX = (parseFloat(miniDisplay.style.left) || miniDisplay.offsetLeft) + dx;
+            let newY = (parseFloat(miniDisplay.style.top)  || miniDisplay.offsetTop)  + dy;
+            const margin = 10;
+            newX = Math.max(margin, Math.min(newX, window.innerWidth  - miniDisplay.offsetWidth  - margin));
+            newY = Math.max(margin, Math.min(newY, window.innerHeight - miniDisplay.offsetHeight - margin));
+            miniDisplay.style.left = `${newX}px`;
+            miniDisplay.style.top  = `${newY}px`;
+        }
+
+        // =====================================================================
+        // ATUALIZAÇÃO DO DISPLAY
+        // MELHORIA 1: Lógica de ajuste completamente removida do updateDisplay
+        // =====================================================================
+        function updateDisplay() {
+            if (isRunning && !isPaused) {
+                const elapsed = (Date.now() - startTime) * (isDoubleSpeed ? 2 : 1);
+                totalTime += elapsed;
+                if      (currentActivity === 'NVA') nvaTime += elapsed;
+                else if (currentActivity === 'SVA') svaTime += elapsed;
+                else if (currentActivity === 'VAA') vaaTime += elapsed;
+                startTime = Date.now();
+                saveState();
+            }
+
+            display.textContent = formatTime(totalTime);
+            document.getElementById('nva-time-display').textContent = formatTimeSimple(nvaTime);
+            document.getElementById('sva-time-display').textContent = formatTimeSimple(svaTime);
+            document.getElementById('vaa-time-display').textContent = formatTimeSimple(vaaTime);
+
+            // Status
+            let statusMessage = 'Cronômetro PAUSADO.';
+            if (isRunning && !isPaused) {
+                const speedIndicator = isDoubleSpeed ? ' (em 2x)' : '';
+                const colorMap = { NVA: 'red', SVA: 'yellow', VAA: 'green' };
+                const actDisplay = currentActivity
+                    ? `<span class="font-extrabold text-${(colorMap[currentActivity] || 'gray')}-700">${currentActivity}</span>`
+                    : 'sem classificação';
+                statusMessage = `Cronometrando: ${actDisplay}${speedIndicator}`;
+            } else if (!isRunning) {
+                statusMessage = 'Cronômetro pronto. Inicie o vídeo ou pressione INICIAR.';
+            }
+            statusText.innerHTML = statusMessage;
+
+            speedText.textContent = isDoubleSpeed ? '2x' : '1x';
+            btn2x.classList.toggle('bg-purple-600', isDoubleSpeed);
+            btn2x.classList.toggle('bg-purple-500', !isDoubleSpeed);
+
+            pauseText.textContent = isPaused ? 'INICIAR' : 'PAUSAR';
+            btnPause.classList.toggle('bg-green-500', isPaused);
+            btnPause.classList.toggle('bg-blue-500', !isPaused);
+
+            // Cor do fundo
+            const body = document.body;
+            const chrono = document.getElementById('chronometer-display');
+            body.className = "min-h-screen flex items-center justify-center p-4 transition-all duration-300";
+            chrono.classList.remove('bg-red-200','bg-yellow-200','bg-green-200','bg-gray-100');
+            chrono.classList.add('bg-gray-100');
+            if (isRunning && !isPaused && currentActivity) {
+                const colorBase = { NVA: 'red', SVA: 'yellow', VAA: 'green' }[currentActivity] || 'gray';
+                body.classList.add(`bg-${colorBase}-100`);
+                chrono.classList.remove('bg-gray-100');
+                chrono.classList.add(`bg-${colorBase}-200`);
+            } else {
+                body.classList.add('bg-gray-100');
+                body.style.backgroundColor = '#f3f4f6';
+            }
+
+            // Mini Display
+            const isFullscreen = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            miniDisplay.classList.toggle('fullscreen-active', !!isFullscreen);
+
+            const miniColors = ['bg-red-500','bg-yellow-500','bg-green-500','text-gray-900','text-white','bg-gray-600','bg-blue-600'];
+            miniDisplay.classList.remove('opacity-0','opacity-100',...miniColors,'bg-blue-500');
+            miniDisplay.classList.add('opacity-100');
+            if (isMiniDisplayHidden) { miniDisplay.classList.add('hidden-fully'); return; }
+
+            let bgColor = 'bg-gray-600', textColor = 'text-white', activityName = 'PRONTO';
+            if (isRunning && !isPaused) {
+                activityName = isDoubleSpeed ? '(2x)' : 'ATIVO';
+                if      (currentActivity === 'NVA') bgColor = 'bg-red-500';
+                else if (currentActivity === 'SVA') { bgColor = 'bg-yellow-500'; textColor = 'text-gray-900'; }
+                else if (currentActivity === 'VAA') bgColor = 'bg-green-500';
+            } else if (isPaused) {
+                activityName = 'PAUSADO'; bgColor = 'bg-blue-600';
+            }
+
+            miniDisplay.classList.add(bgColor, textColor);
+            const currentChronoTime = formatMiniDisplayTime(totalTime, currentSizeIndex);
+
+            if (isMiniDisplayMinimized) {
+                const short = currentActivity ? currentActivity.charAt(0) : (isPaused ? 'P' : 'R');
+                miniDisplay.innerHTML = `<button onclick="toggleMiniDisplayMinimized()" class="w-full h-full flex items-center justify-center text-2xl font-extrabold" title="Maximizar">${short}</button>`;
+            } else {
+                miniDisplay.innerHTML = `
+                    <div id="drag-handle" class="flex justify-between items-center w-full px-2 pt-1 pb-1 drag-handle">
+                        <div class="text-sm font-semibold">${activityName}</div>
+                        <div class="flex space-x-1">
+                            <button onclick="toggleMiniDisplayMinimized()" title="Minimizar" class="hover:opacity-75">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 ${textColor}"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                            </button>
+                            <button onclick="toggleMiniDisplayHidden()" title="Fechar (F)" class="hover:opacity-75">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 ${textColor}"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="text-4xl px-2 pb-2">${currentChronoTime}</div>`;
+            }
+        }
+
+        // =====================================================================
+        // TIMER
+        // =====================================================================
+        function startTimer() {
+            if (intervalId) return;
+            startTime = Date.now();
+            intervalId = setInterval(() => { if (!isPaused) { isRunning = true; updateDisplay(); } }, UPDATE_INTERVAL_MS);
+        }
+
+        function stopTimer() {
+            if (isRunning && !isPaused) {
+                const elapsed = (Date.now() - startTime) * (isDoubleSpeed ? 2 : 1);
+                totalTime += elapsed;
+                if      (currentActivity === 'NVA') nvaTime += elapsed;
+                else if (currentActivity === 'SVA') svaTime += elapsed;
+                else if (currentActivity === 'VAA') vaaTime += elapsed;
+            }
+            clearInterval(intervalId);
+            intervalId = null;
+            isRunning = false;
+        }
+
+        function syncPause(pauseState) {
+            if (pauseState && !isPaused) { isPaused = true; stopTimer(); updateDisplay(); }
+            else if (!pauseState && isPaused) { isPaused = false; startTimer(); updateDisplay(); }
+        }
+
+        function syncSpeed(rate) {
+            const shouldBeDouble = rate === 2.0;
+            if (shouldBeDouble !== isDoubleSpeed) { isDoubleSpeed = shouldBeDouble; updateDisplay(); }
+        }
+
+        // =====================================================================
+        // AÇÕES
+        // MELHORIA 1: setActivity não trata mais 'AJUSTE'
+        // =====================================================================
+        function setActivity(activity) {
+            if (isPaused) {
+                if (videoElement.src && videoElement.paused) videoElement.play();
+                else { isPaused = false; startTimer(); }
+            }
+
+            if (currentActivity !== activity) {
+                activityLog.push({ time: totalTime, activity });
+                if (videoElement.src) classificationStartPoints[activity].push(videoElement.currentTime);
+            }
+
+            currentActivity = activity;
+            lastKnownActivity = activity;
+
+            document.querySelectorAll('.indicator-button').forEach(btn => {
+                btn.classList.remove('active','opacity-70');
+            });
+            document.getElementById(`btn-${activity.toLowerCase()}`).classList.add('active');
+            document.querySelectorAll('.indicator-button').forEach(btn => {
+                if (btn.dataset.activity !== activity) btn.classList.add('opacity-70');
+            });
+
+            updateDisplay(); renderLog(); saveState();
+        }
+
+        function togglePause(isSync = false) {
+            if (!isSync && videoElement.src) {
+                if (videoElement.paused) videoElement.play();
+                else videoElement.pause();
+                return;
+            }
+            isPaused = !isPaused;
+            if (!isPaused) startTimer(); else stopTimer();
+            document.querySelectorAll('.indicator-button').forEach(btn => {
+                btn.classList.remove('active','opacity-70');
+                btn.classList.toggle('opacity-50', isPaused);
+            });
+            if (isPaused) currentActivity = null;
+            updateDisplay(); saveState();
+        }
+
+        function toggleSpeed() {
+            isDoubleSpeed = !isDoubleSpeed;
+            if (videoElement.src) videoElement.playbackRate = isDoubleSpeed ? 2.0 : 1.0;
+            updateDisplay(); saveState();
+        }
+
+        // =====================================================================
+        // DESFAZER (Ctrl+Z)
+        // =====================================================================
+        function undoLastEvent() {
+            if (activityLog.length === 0) return;
+            const wasRunning = isRunning && !isPaused;
+            if (wasRunning) stopTimer();
+            activityLog.pop();
+            const restoreTime = activityLog.length > 0 ? activityLog[activityLog.length - 1].time : 0;
+            totalTime = restoreTime;
+            nvaTime = svaTime = vaaTime = 0;
+            // Recalcula os tempos a partir do log
+            for (let i = 0; i < activityLog.length - 1; i++) {
+                const dur = activityLog[i + 1].time - activityLog[i].time;
+                if      (activityLog[i].activity === 'NVA') nvaTime += dur;
+                else if (activityLog[i].activity === 'SVA') svaTime += dur;
+                else if (activityLog[i].activity === 'VAA') vaaTime += dur;
+            }
+            currentActivity = activityLog.length > 0 ? activityLog[activityLog.length - 1].activity : null;
+            if (videoElement.src) videoElement.currentTime = restoreTime / 1000;
+            if (wasRunning) { isPaused = false; startTimer(); } else { isPaused = true; isRunning = false; }
+            updateDisplay(); renderLog(); saveState();
+        }
+
+        // =====================================================================
+        // RESET / SALVAR
+        // MELHORIA 1: Campos de ajuste removidos
+        // =====================================================================
+        function saveAndResetTimer() {
+            if (totalTime > 0) {
+                const confirmation = window.confirm(`ATENÇÃO: Deseja SALVAR a medição atual (${formatTimeSimple(totalTime)}) e ZERAR o cronômetro?`);
+                if (confirmation) {
+                    stopTimer(); isPaused = true;
+                    let nvaP = Math.round((nvaTime / totalTime) * 100) || 0;
+                    let svaP = Math.round((svaTime / totalTime) * 100) || 0;
+                    let vaaP = 100 - nvaP - svaP;
+                    if (vaaP < 0) { vaaP = 0; nvaP = 100 - svaP; if (nvaP < 0) nvaP = 0; }
+                    saveMeasurement(nvaP, svaP, vaaP, JSON.parse(JSON.stringify(classificationStartPoints)));
+                    activityLog = [];
+                    localStorage.removeItem('cronoState');
+                    resetTimer();
+                }
+            } else { resetTimer(); }
+        }
+
+        function resetTimer() {
+            stopTimer();
+            totalTime = nvaTime = svaTime = vaaTime = 0;
+            isRunning = false; isPaused = true; isDoubleSpeed = false; currentActivity = null;
+            classificationStartPoints.NVA.length = 0;
+            classificationStartPoints.SVA.length = 0;
+            classificationStartPoints.VAA.length = 0;
+            currentVideoFileName = "AnaliseSemVideo";
+            if (videoElement.src) { videoElement.pause(); videoElement.currentTime = 0; videoElement.playbackRate = 1.0; }
+            document.querySelectorAll('.indicator-button').forEach(btn => btn.classList.remove('active','opacity-70','opacity-50'));
+            closeReport();
+            if (excelDataInput)  excelDataInput.value  = "0% 0% 0%";
+            if (excelTimesInput) excelTimesInput.value = "00:00:00 00:00:00 00:00:00";
+            updateDisplay(); renderLog();
+            statusText.innerHTML = 'Cronômetro REINICIADO. Pronto para começar.';
+            reFetchModalElements(); attachReportModalListeners();
+            saveState();
+        }
+
+        // =====================================================================
+        // MODAL — RELATÓRIO
+        // =====================================================================
+        function reFetchModalElements() {
+            excelDataInput    = document.getElementById('excel-data');
+            excelTimesInput   = document.getElementById('excel-times');
+            reportTab         = document.getElementById('tab-report');
+            historyTab        = document.getElementById('tab-history');
+            logTab            = document.getElementById('tab-log');
+            reportTabContent  = document.getElementById('report-tab-content');
+            historyTabContent = document.getElementById('history-tab-content');
+            logTabContent     = document.getElementById('log-tab-content');
+            historyList       = document.getElementById('history-list');
+            currentLogList    = document.getElementById('current-log-list');
+            excelPrintDataElement = document.querySelector('#excel-print-data .excel-value');
+        }
+
+        function renderHistory() {
+            if (!historyList) { reFetchModalElements(); if (!historyList) return; }
+            if (measurementsHistory.length === 0) {
+                historyList.innerHTML = '<p class="text-gray-500 text-center p-4 bg-gray-50 rounded-lg">Nenhuma medição salva ainda.</p>';
+                return;
+            }
+            historyList.innerHTML = measurementsHistory.map(m => `
+                <div class="bg-gray-50 p-4 rounded-lg shadow border-l-4 border-teal-500 flex justify-between items-center transition-shadow hover:shadow-lg" data-id="${m.id}">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex items-center space-x-2">
+                            <span id="name-display-${m.id}" class="text-lg font-bold text-gray-800 cursor-pointer hover:text-teal-600 truncate" title="Clique para editar">${m.name}</span>
+                            <input type="text" id="name-input-${m.id}" value="${m.name}" class="hidden text-lg font-bold border-b border-gray-400 p-0 focus:outline-none bg-transparent w-full">
+                        </div>
+                        <p class="text-sm text-gray-500">
+                            Total: ${formatTimeSimple(m.totalTime)} | NVA: ${m.nvaPercent}% | SVA: ${m.svaPercent}% | VAA: ${m.vaaPercent}%
+                        </p>
+                        <p class="text-xs text-gray-400 mt-1">Salvo em: ${m.timestamp}</p>
+                    </div>
+                    <button data-id="${m.id}" class="btn-delete-history text-red-500 hover:text-red-700 p-2 rounded-full transition-colors no-print" title="Excluir">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.166L15.9 5.214M3 5.214A2.25 2.25 0 015.214 3h13.435a2.25 2.25 0 012.23 2.158M16.5 6l-1.442 1.442m-5.464 5.464L4.5 18.5"/></svg>
+                    </button>
+                </div>
+            `).join('');
+
+            measurementsHistory.forEach(m => {
+                const display = document.getElementById(`name-display-${m.id}`);
+                const input   = document.getElementById(`name-input-${m.id}`);
+                const del     = document.querySelector(`.btn-delete-history[data-id="${m.id}"]`);
+                if (display && input) {
+                    display.addEventListener('click', () => { display.classList.add('hidden'); input.classList.remove('hidden'); input.focus(); });
+                    const save = () => {
+                        const n = input.value.trim() || `Medição ${m.id}`;
+                        const item = measurementsHistory.find(x => x.id === m.id);
+                        if (item) { item.name = n; display.textContent = n; }
+                        input.classList.add('hidden'); display.classList.remove('hidden');
+                    };
+                    input.addEventListener('blur', save);
+                    input.addEventListener('keydown', e => { if (e.key === 'Enter') save(); });
+                }
+                if (del) del.addEventListener('click', e => {
+                    measurementsHistory = measurementsHistory.filter(x => x.id !== parseInt(e.currentTarget.dataset.id));
+                    renderHistory(); saveState();
+                });
+            });
+        }
+
+        function renderLog() {
+            if (!currentLogList) { reFetchModalElements(); if (!currentLogList) return; }
+            if (activityLog.length === 0) {
+                currentLogList.innerHTML = '<p class="text-gray-500 text-center text-sm p-3">Nenhum evento de classificação registrado.</p>';
+                return;
+            }
+            const colorMap = { NVA: 'bg-red-500', SVA: 'bg-yellow-500 text-gray-900', VAA: 'bg-green-500' };
+            currentLogList.innerHTML = activityLog.slice().reverse().map(log => `
+                <div class="p-2 border-b border-gray-100 flex justify-between items-center hover:bg-gray-50">
+                    <span class="font-mono text-sm text-gray-700">${formatTimeSimple(log.time)}</span>
+                    <span class="${colorMap[log.activity] || 'bg-gray-500'} text-white px-2 rounded text-sm font-semibold">${log.activity}</span>
+                </div>
+            `).join('');
+        }
+
+        // =====================================================================
+        // GERAR RELATÓRIO
+        // MELHORIA 2: Popula as duas caixas (porcentagens e tempos brutos)
+        // =====================================================================
+        function generateReport() {
+            stopTimer(); isPaused = true; updateDisplay();
+            reFetchModalElements();
+
+            if (totalTime === 0) {
+                if (reportTabContent) reportTabContent.innerHTML = `<p class="text-center text-xl text-gray-600 p-8">Nenhum tempo registrado para gerar o relatório.</p>`;
+                switchTab('report');
+                messageBox.classList.remove('hidden'); messageBox.classList.add('flex');
+                return;
+            }
+
+            if (reportTabContent && reportTabContent.innerHTML.includes('Nenhum tempo registrado')) {
+                reportModalContent.innerHTML = originalReportHTML;
+                attachReportModalListeners(); reFetchModalElements();
+            }
+
+            const total = totalTime;
+            let nvaP = Math.round((nvaTime / total) * 100) || 0;
+            let svaP = Math.round((svaTime / total) * 100) || 0;
+            let vaaP = 100 - nvaP - svaP;
+            if (total === 0) { nvaP = svaP = vaaP = 0; }
+            else if (vaaP < 0) {
+                vaaP = 0;
+                const s = nvaP + svaP;
+                if (s > 0) { nvaP = Math.round(nvaP + (100 - s) * (nvaP / s)); svaP = 100 - nvaP; }
+                else { nvaP = svaP = 0; vaaP = 100; }
+            }
+
+            saveMeasurement(nvaP, svaP, vaaP, JSON.parse(JSON.stringify(classificationStartPoints)));
+
+            // Tabela de resultados
+            document.getElementById('rep-nva-time').textContent    = formatTimeSimple(nvaTime);
+            document.getElementById('rep-sva-time').textContent    = formatTimeSimple(svaTime);
+            document.getElementById('rep-vaa-time').textContent    = formatTimeSimple(vaaTime);
+            document.getElementById('rep-total-time').textContent  = formatTimeSimple(total);
+            document.getElementById('rep-nva-percent').textContent = `${nvaP}%`;
+            document.getElementById('rep-sva-percent').textContent = `${svaP}%`;
+            document.getElementById('rep-vaa-percent').textContent = `${vaaP}%`;
+
+            // MELHORIA 2: Preenche as duas caixas de exportação
+            excelDataInput.value  = `${nvaP}% ${svaP}% ${vaaP}%`;
+            excelTimesInput.value = `${formatTimeSimple(nvaTime)} ${formatTimeSimple(svaTime)} ${formatTimeSimple(vaaTime)}`;
+
+            if (excelPrintDataElement) {
+                excelPrintDataElement.textContent = `${nvaP}% | ${svaP}% | ${vaaP}%`;
+            }
+
+            switchTab('report');
+            messageBox.classList.remove('hidden'); messageBox.classList.add('flex');
+        }
+
+        function closeReport() {
+            messageBox.classList.add('hidden'); messageBox.classList.remove('flex');
+            if (reportTabContent && reportTabContent.innerHTML.includes('Nenhum tempo registrado')) {
+                reportModalContent.innerHTML = originalReportHTML;
+                attachReportModalListeners(); reFetchModalElements();
+            }
+        }
+
+        function switchTab(tabName) {
+            activeTab = tabName;
+            [reportTab, historyTab, logTab].forEach(tab => {
+                if (!tab) return;
+                const isActive = tab.dataset.tab === tabName;
+                tab.classList.toggle('border-teal-500', isActive);
+                tab.classList.toggle('text-teal-600', isActive);
+                tab.classList.toggle('border-transparent', !isActive);
+                tab.classList.toggle('text-gray-500', !isActive);
+                document.getElementById(`${tab.dataset.tab}-tab-content`).style.display = isActive ? 'block' : 'none';
+            });
+            if (tabName === 'history') renderHistory();
+            else if (tabName === 'log') renderLog();
+        }
+
+        // MELHORIA 2: Listener do novo botão de cópia de tempos brutos
+        function attachReportModalListeners() {
+            reFetchModalElements();
+            document.getElementById('btn-close-report').addEventListener('click', closeReport);
+            document.getElementById('btn-print-report').addEventListener('click', printReport);
+            document.getElementById('btn-copy-excel').addEventListener('click', () => copyField('excel-data'));
+            document.getElementById('btn-copy-times').addEventListener('click', () => copyField('excel-times'));
+            document.getElementById('tab-report').addEventListener('click', () => switchTab('report'));
+            document.getElementById('tab-history').addEventListener('click', () => switchTab('history'));
+            document.getElementById('tab-log').addEventListener('click', () => switchTab('log'));
+        }
+
+        async function copyField(id) {
+            const field = document.getElementById(id);
+            const btn   = id === 'excel-data'
+                ? document.getElementById('btn-copy-excel')
+                : document.getElementById('btn-copy-times');
+            const original = btn.textContent;
+            try {
+                await navigator.clipboard.writeText(field.value);
+                btn.textContent = 'Copiado!';
+            } catch {
+                field.select(); field.setSelectionRange(0, 99999);
+                try { document.execCommand('copy'); btn.textContent = 'Copiado!'; }
+                catch { btn.textContent = 'Erro!'; }
+            }
+            setTimeout(() => { btn.textContent = original; }, 1500);
+        }
+
+        function saveMeasurement(nvaP, svaP, vaaP, points) {
+            let baseName = currentVideoFileName;
+            let finalName = baseName;
+            if (baseName === "AnaliseSemVideo") {
+                finalName = `Medição ${historyCounter}`;
+            } else {
+                let suffix = 1;
+                while (measurementsHistory.some(m => m.name === finalName)) { suffix++; finalName = `${baseName} (${suffix})`; }
+            }
+            measurementsHistory.push({
+                id: historyCounter++, name: finalName,
+                timestamp: new Date().toLocaleString('pt-BR'),
+                totalTime, nvaTime, svaTime, vaaTime,
+                nvaPercent: nvaP, svaPercent: svaP, vaaPercent: vaaP,
+                classificationPoints: points,
+                eventLog: JSON.parse(JSON.stringify(activityLog))
+            });
+            renderHistory(); saveState();
+        }
+
+        function printReport() {
+            if (totalTime === 0 && activeTab === 'report') return;
+            const excelVal = document.getElementById('excel-data').value;
+            const excelPrintEl = document.getElementById('excel-print-data');
+            if (excelPrintEl) excelPrintEl.querySelector('.excel-value').textContent = excelVal;
+
+            let content = `<div class="printable-content" style="padding:40px;">
+                <h2 class="text-3xl font-extrabold text-gray-800 mb-6 text-center">Cronoanálise de Valor Agregado</h2>
+                ${document.getElementById(`${activeTab}-tab-content`).innerHTML}
+            </div>`;
+            content = content.replace(/no-print/g, 'no-print-element').replace(/excel-input-wrapper/g, 'no-print-element');
+
+            printArea.innerHTML = content;
+            printArea.classList.remove('hidden');
+            document.getElementById('app-container').classList.add('hidden');
+            messageBox.classList.add('hidden');
+            const originalTitle = document.title;
+            document.title = `${currentVideoFileName} - Análise CAV`;
+            window.print();
+            setTimeout(() => {
+                document.title = originalTitle;
+                printArea.classList.add('hidden');
+                document.getElementById('app-container').classList.remove('hidden');
+                messageBox.classList.remove('hidden'); messageBox.classList.add('flex');
+            }, 500);
+        }
+
+        // =====================================================================
+        // VÍDEO
+        // =====================================================================
+        function getFileName(url) {
+            if (!url) return "AnaliseSemVideo";
+            const parts = url.split(/[\\/]/);
+            let name = parts.pop();
+            const qi = name.indexOf('?'); if (qi !== -1) name = name.substring(0, qi);
+            const di = name.lastIndexOf('.'); if (di > 0) name = name.substring(0, di);
+            return name.replace(/%20/g, ' ').trim() || "AnaliseSemVideo";
+        }
+
+        function loadFileFromObject(file) {
+            if (!file) return;
+            videoStatus.innerHTML = `<span class="text-blue-500 font-semibold">Carregando arquivo...</span>`;
+            videoElement.style.display = 'none';
+            resetTimer();
+            setTimeout(() => {
+                try {
+                    videoElement.src = URL.createObjectURL(file);
+                    videoElement.onloadeddata = () => {
+                        videoElement.style.display = 'block';
+                        videoStatus.textContent = `Vídeo carregado: ${file.name}. Cronômetro sincronizado.`;
+                        videoElement.onloadeddata = null;
+                        totalTime = 0; updateDisplay();
+                        currentVideoFileName = getFileName(file.name);
+                    };
+                    videoElement.onerror = () => {
+                        videoStatus.innerHTML = `<span class="text-red-500 font-semibold">ERRO: Arquivo corrompido ou inacessível.</span>`;
+                        videoElement.src = ''; videoElement.style.display = 'none'; videoElement.onerror = null;
+                    };
+                } catch { videoStatus.innerHTML = `<span class="text-red-500 font-semibold">ERRO CRÍTICO na leitura do arquivo.</span>`; }
+            }, 50);
+        }
+
+        function loadVideoFromUrl() {
+            const url = videoUrlInput.value.trim();
+            if (!url) return;
+            videoStatus.innerHTML = `<span class="text-blue-500 font-semibold">Carregando vídeo de streaming...</span>`;
+            videoElement.style.display = 'none';
+            resetTimer();
+            setTimeout(() => {
+                try {
+                    videoElement.src = url;
+                    videoElement.onloadeddata = () => {
+                        videoElement.style.display = 'block';
+                        videoStatus.textContent = `Vídeo carregado via streaming. Cronômetro sincronizado.`;
+                        videoElement.onloadeddata = null;
+                        totalTime = 0; updateDisplay();
+                        currentVideoFileName = getFileName(url);
+                    };
+                    videoElement.onerror = () => {
+                        videoStatus.innerHTML = `<span class="text-red-500 font-semibold">ERRO: Verifique a URL ou permissões do OneDrive/SharePoint.</span>`;
+                        videoElement.src = ''; videoElement.style.display = 'none'; videoElement.onerror = null;
+                    };
+                } catch { videoStatus.innerHTML = `<span class="text-red-500 font-semibold">ERRO CRÍTICO no streaming.</span>`; }
+            }, 50);
+        }
+
+        function removeVideo() {
+            if (videoElement.src) {
+                videoElement.pause(); videoElement.src = ''; videoElement.style.display = 'none';
+                videoStatus.textContent = 'Cole a URL de streaming do OneDrive ou carregue um arquivo local, ou arraste e solte um vídeo aqui.';
+                videoInput.value = '';
+                resetTimer();
+            }
+        }
+
+        // =====================================================================
+        // LISTENERS
+        // =====================================================================
+        btnLoadUrl.addEventListener('click', loadVideoFromUrl);
+        videoUrlInput.addEventListener('keydown', e => { if (e.key === 'Enter') { e.preventDefault(); loadVideoFromUrl(); } });
+        videoInput.addEventListener('change', e => loadFileFromObject(e.target.files[0]));
+        document.getElementById('btn-remove-video').addEventListener('click', removeVideo);
+
+        // Drag & Drop
+        ['dragenter','dragover','dragleave','drop'].forEach(ev => videoArea.addEventListener(ev, e => { e.preventDefault(); e.stopPropagation(); }, false));
+        videoArea.addEventListener('dragenter', () => videoArea.classList.add('drag-over'));
+        videoArea.addEventListener('dragover',  () => videoArea.classList.add('drag-over'));
+        videoArea.addEventListener('dragleave', () => videoArea.classList.remove('drag-over'));
+        videoArea.addEventListener('drop', e => {
+            videoArea.classList.remove('drag-over');
+            const file = e.dataTransfer.files[0];
+            if (file && file.type.startsWith('video/')) loadFileFromObject(file);
+            else videoStatus.innerHTML = `<span class="text-red-500 font-semibold">Apenas arquivos de vídeo são suportados.</span>`;
+        });
+
+        videoElement.addEventListener('play',       () => { syncPause(false); updateDisplay(); });
+        videoElement.addEventListener('pause',      () => { syncPause(true);  updateDisplay(); });
+        videoElement.addEventListener('ratechange', e  => syncSpeed(e.target.playbackRate));
+
+        // MELHORIA 1: Apenas 3 botões de atividade
+        document.getElementById('btn-nva').addEventListener('click', () => setActivity('NVA'));
+        document.getElementById('btn-sva').addEventListener('click', () => setActivity('SVA'));
+        document.getElementById('btn-vaa').addEventListener('click', () => setActivity('VAA'));
+        document.getElementById('btn-report').addEventListener('click', generateReport);
+        document.getElementById('btn-reset').addEventListener('click', saveAndResetTimer);
+        btnPause.addEventListener('click', () => togglePause());
+        btn2x.addEventListener('click', toggleSpeed);
+        btnToggleMini.addEventListener('click', toggleMiniDisplayHidden);
+        document.getElementById('btn-classify').addEventListener('click', () => classifyActivity(document.getElementById('query-input').value));
+
+        // Mini display — teleport
+        miniDisplay.addEventListener('click', e => {
+            if (e.target.closest('button')) { isTeleporting = false; miniDisplay.classList.remove('teleporting'); return; }
+            isTeleporting = !isTeleporting;
+            miniDisplay.classList.toggle('teleporting', isTeleporting);
+            e.stopPropagation();
+        });
+        document.addEventListener('click', e => {
+            if (document.getElementById('app-container').contains(e.target) || messageBox.contains(e.target)) return;
+            if (isTeleporting) {
+                moveMiniDisplay(e.clientX - (miniDisplay.offsetLeft + miniDisplay.offsetWidth / 2), e.clientY - (miniDisplay.offsetTop + miniDisplay.offsetHeight / 2));
+                isTeleporting = false; miniDisplay.classList.remove('teleporting');
+            }
+        });
+
+        // Fullscreen
+        ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','msfullscreenchange'].forEach(ev => document.addEventListener(ev, () => {
+            const isFs = document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement || document.msFullscreenElement;
+            updateDisplay();
+            if (isFs) {
+                if (isMiniDisplayHidden) { miniDisplay.classList.remove('hidden-fully'); isMiniDisplayHidden = false; }
+                const rect = miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left = `${rect.left}px`; miniDisplay.style.top = `${rect.top}px`;
+                miniDisplay.style.right = 'auto'; miniDisplay.style.bottom = 'auto';
+                miniDisplay.classList.add('fullscreen-active');
+            } else { miniDisplay.classList.remove('fullscreen-active'); }
+        }));
+
+        // Teclado
+        document.addEventListener('keydown', e => {
+            const inInput = e.target.tagName === 'INPUT';
+            if (e.key === 'Enter' && inInput) return;
+
+            if (e.ctrlKey && e.key.toLowerCase() === 'z' && !messageBox.classList.contains('flex')) {
+                e.preventDefault(); undoLastEvent(); return;
+            }
+
+            if (isTeleporting && ['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)) {
+                e.preventDefault();
+                const step = 20;
+                if (e.key === 'ArrowUp')    moveMiniDisplay(0,    -step);
+                if (e.key === 'ArrowDown')  moveMiniDisplay(0,     step);
+                if (e.key === 'ArrowLeft')  moveMiniDisplay(-step, 0);
+                if (e.key === 'ArrowRight') moveMiniDisplay( step, 0);
+                return;
+            }
+
+            if (!inInput) {
+                if ([' ','Enter','Shift','1','2','3','x','+','-'].includes(e.key)) e.preventDefault();
+                if (!isTeleporting && (e.key === 'ArrowLeft' || e.key === 'ArrowRight')) e.preventDefault();
+            }
+            if (inInput) return;
+
+            switch (e.key.toLowerCase()) {
+                case '1': setActivity('NVA'); break;
+                case '2': setActivity('SVA'); break;
+                case '3': setActivity('VAA'); break;
+                case ' ':
+                    if (!messageBox.classList.contains('flex')) togglePause(); break;
+                case 'x':
+                    if (!messageBox.classList.contains('flex')) toggleSpeed(); break;
+                case 'enter':
+                    if (messageBox.classList.contains('flex')) closeReport(); else generateReport(); break;
+                case 'shift': saveAndResetTimer(); break;
+                case '+': case '=':
+                    if (!messageBox.classList.contains('flex')) changeMiniDisplaySize(1); break;
+                case '-':
+                    if (!messageBox.classList.contains('flex')) changeMiniDisplaySize(-1); break;
+                case 'escape':
+                    if (isTeleporting) { isTeleporting = false; miniDisplay.classList.remove('teleporting'); }
+                    else if (messageBox.classList.contains('flex')) closeReport();
+                    break;
+                case 'f': {
+                    const isFs = document.fullscreenElement || document.webkitFullscreenElement;
+                    if (isFs) { if (isMiniDisplayHidden) toggleMiniDisplayHidden(); }
+                    else toggleMiniDisplayHidden();
+                    break;
+                }
+            }
+        });
+
+        // =====================================================================
+        // INICIALIZAÇÃO
+        // =====================================================================
+        window.onload = function () {
+            reFetchModalElements();
+            originalReportHTML = reportModalContent.innerHTML;
+            if (!loadState()) {
+                attachReportModalListeners();
+                attachClassificationListeners();
+                miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);
+                const rect = miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left = `${rect.left}px`; miniDisplay.style.top = `${rect.top}px`;
+                miniDisplay.style.right = 'auto'; miniDisplay.style.bottom = 'auto';
+            } else {
+                attachReportModalListeners();
+                attachClassificationListeners();
+                miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);
+            }
+            updateDisplay();
+        };
+
+        updateDisplay();
+        stopTimer();
+    </script>
+</body>
+</html>
