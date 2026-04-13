@@ -1,0 +1,1722 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoView · Tempos & Métodos</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=DM+Sans:wght@300;400;500;600;700&family=Rajdhani:wght@500;600;700&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        mono: ['"Space Mono"', 'monospace'],
+                        sans: ['"DM Sans"', 'sans-serif'],
+                        display: ['Rajdhani', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* ═══════════════════════════════════════════════
+           TEMA ESCURO (padrão)
+        ═══════════════════════════════════════════════ */
+        :root {
+            --bg-base:          #0d0f14;
+            --bg-panel:         #13161e;
+            --bg-elevated:      #1a1e2a;
+            --bg-input:         #0f1117;
+            --border:           #252a38;
+            --border-bright:    #353d54;
+            --text-primary:     #e8eaf0;
+            --text-secondary:   #8a90a8;
+            --text-muted:       #4a5068;
+            --accent-amber:     #f59e0b;
+            --accent-amber-dim: #b37208;
+            --nva-color:        #ef4444;
+            --nva-dim:          #7f1d1d;
+            --nva-bg:           rgba(239,68,68,0.08);
+            --sva-color:        #f59e0b;
+            --sva-dim:          #78350f;
+            --sva-bg:           rgba(245,158,11,0.08);
+            --vaa-color:        #22c55e;
+            --vaa-dim:          #14532d;
+            --vaa-bg:           rgba(34,197,94,0.08);
+            --shadow-modal:     0 25px 60px rgba(0,0,0,0.7);
+        }
+
+        /* ═══════════════════════════════════════════════
+           TEMA CLARO
+        ═══════════════════════════════════════════════ */
+        [data-theme="light"] {
+            --bg-base:          #f0f2f7;
+            --bg-panel:         #ffffff;
+            --bg-elevated:      #f5f7fc;
+            --bg-input:         #eef0f7;
+            --border:           #dde1ee;
+            --border-bright:    #c4cadf;
+            --text-primary:     #181b28;
+            --text-secondary:   #555e7a;
+            --text-muted:       #909ab8;
+            --accent-amber:     #d97706;
+            --accent-amber-dim: #b45309;
+            --nva-color:        #dc2626;
+            --nva-dim:          #fecaca;
+            --nva-bg:           rgba(220,38,38,0.07);
+            --sva-color:        #b45309;
+            --sva-dim:          #fde68a;
+            --sva-bg:           rgba(180,83,9,0.07);
+            --vaa-color:        #16a34a;
+            --vaa-dim:          #bbf7d0;
+            --vaa-bg:           rgba(22,163,74,0.07);
+            --shadow-modal:     0 25px 60px rgba(0,0,0,0.18);
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'DM Sans', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            padding: 0; margin: 0;
+            transition: background-color 0.25s, color 0.25s;
+        }
+
+        /* ── HEADER ── */
+        #site-header {
+            background: var(--bg-panel);
+            border-bottom: 1px solid var(--border);
+            padding: 0 1.25rem;
+            height: 52px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky; top: 0; z-index: 200;
+            transition: background 0.25s, border-color 0.25s;
+        }
+        .logo {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.3rem; font-weight: 700;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--text-primary);
+        }
+        .logo span { color: var(--accent-amber); }
+        .header-badge {
+            font-family: 'Space Mono', monospace;
+            font-size: 0.62rem; color: var(--text-muted);
+            letter-spacing: 0.1em;
+            border: 1px solid var(--border);
+            padding: 2px 7px; border-radius: 3px; text-transform: uppercase;
+        }
+        .header-right { display: flex; align-items: center; gap: 0.6rem; }
+
+        /* ── LAYOUT ── */
+        #main-layout-container {
+            width: 100%; max-width: 1440px; margin: 0 auto;
+            display: flex; gap: 0; align-items: flex-start; flex: 1;
+        }
+        #video-column {
+            flex: 1; min-width: 0;
+            border-right: 1px solid var(--border);
+            padding: 1.25rem;
+            display: flex; flex-direction: column; gap: 1rem;
+        }
+        #app-container {
+            width: 320px; flex-shrink: 0;
+            padding: 1.25rem;
+            display: flex; flex-direction: column; gap: 1rem;
+            border-right: 1px solid var(--border);
+        }
+
+        /* ── MOBILE MODE ── */
+        body.mobile-mode #video-column { display: none; }
+        body.mobile-mode #main-layout-container { justify-content: center; }
+        body.mobile-mode #app-container {
+            width: 100%; max-width: 420px;
+            border-right: none;
+            padding: 1rem;
+        }
+        body.mobile-mode #mobile-banner { display: flex; }
+
+        #mobile-banner {
+            display: none;
+            background: rgba(245,158,11,0.12);
+            border-bottom: 1px solid rgba(245,158,11,0.25);
+            padding: 0.5rem 1.25rem;
+            align-items: center; gap: 0.5rem;
+            font-size: 0.78rem; color: var(--accent-amber);
+            font-family: 'Rajdhani', sans-serif;
+            letter-spacing: 0.06em; text-transform: uppercase;
+        }
+
+        /* ── PANELS ── */
+        .panel {
+            background: var(--bg-panel);
+            border: 1px solid var(--border);
+            border-radius: 8px; overflow: hidden;
+            transition: background 0.25s, border-color 0.25s;
+        }
+        .panel-header {
+            padding: 0.6rem 1rem; border-bottom: 1px solid var(--border);
+            display: flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-elevated);
+        }
+        .panel-header-title {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+        .panel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-amber); }
+        .panel-body { padding: 1rem; }
+
+        /* ── VIDEO AREA ── */
+        #analysis-video { width: 100%; display: none; max-height: 65vh; background: #000; }
+        #video-placeholder {
+            min-height: 250px; display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            gap: 0.75rem; padding: 2rem;
+            border: 2px dashed var(--border-bright);
+            border-radius: 6px; margin: 1rem;
+            transition: all 0.2s;
+        }
+        #video-placeholder p { color: var(--text-muted); font-size: 0.82rem; text-align: center; line-height: 1.6; }
+        .video-controls-bar {
+            padding: 0.65rem 1rem; border-top: 1px solid var(--border);
+            background: var(--bg-elevated);
+            display: flex; gap: 0.45rem; align-items: center;
+        }
+
+        /* ── INPUTS ── */
+        .cv-input {
+            background: var(--bg-input); border: 1px solid var(--border);
+            border-radius: 5px; color: var(--text-primary);
+            font-family: 'DM Sans', sans-serif; font-size: 0.83rem;
+            padding: 0.45rem 0.7rem; width: 100%; outline: none;
+            transition: border-color 0.15s, background 0.25s;
+        }
+        .cv-input:focus { border-color: var(--accent-amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
+        .cv-input::placeholder { color: var(--text-muted); }
+
+        /* ── BUTTONS ── */
+        .cv-btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.82rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 0.45rem 0.9rem; border-radius: 5px;
+            border: none; cursor: pointer;
+            transition: all 0.15s; white-space: nowrap;
+            display: inline-flex; align-items: center; gap: 0.35rem;
+        }
+        .cv-btn:active { transform: scale(0.97); }
+        .btn-amber { background: var(--accent-amber); color: #0d0f14; }
+        .btn-amber:hover { filter: brightness(1.1); }
+        .btn-ghost {
+            background: var(--bg-elevated); color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-ghost:hover { border-color: var(--border-bright); color: var(--text-primary); }
+        .btn-danger { background: var(--nva-bg); color: var(--nva-color); border: 1px solid rgba(239,68,68,0.2); }
+        .btn-danger:hover { background: rgba(239,68,68,0.15); }
+        .btn-teal { background: rgba(20,184,166,0.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.22); }
+        .btn-teal:hover { background: rgba(20,184,166,0.22); }
+
+        /* ── CHRONOMETER ── */
+        #chronometer-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.2rem; font-weight: 700; letter-spacing: 0.04em;
+            color: var(--text-primary); background: var(--bg-input);
+            border: 1px solid var(--border); border-radius: 8px;
+            padding: 0.9rem 1rem; text-align: center;
+            transition: color 0.2s, border-color 0.2s, box-shadow 0.2s, background 0.25s;
+            line-height: 1;
+        }
+        #chronometer-display.state-nva { color: var(--nva-color); border-color: rgba(239,68,68,0.4); box-shadow: 0 0 20px rgba(239,68,68,0.1) inset; }
+        #chronometer-display.state-sva { color: var(--sva-color); border-color: rgba(245,158,11,0.4); box-shadow: 0 0 20px rgba(245,158,11,0.1) inset; }
+        #chronometer-display.state-vaa { color: var(--vaa-color); border-color: rgba(34,197,94,0.4); box-shadow: 0 0 20px rgba(34,197,94,0.1) inset; }
+
+        #activity-status {
+            font-size: 0.75rem; color: var(--text-muted);
+            text-align: center; font-family: 'Space Mono', monospace;
+            letter-spacing: 0.04em; min-height: 1.2rem;
+        }
+
+        /* ── ACTIVITY BUTTONS ── */
+        .indicator-button {
+            position: relative;
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 1.05rem; font-weight: 700;
+            letter-spacing: 0.1em; text-transform: uppercase;
+            padding: 0.8rem 0.5rem; border-radius: 6px;
+            border: 1px solid; cursor: pointer;
+            transition: all 0.15s;
+            display: flex; flex-direction: column;
+            align-items: center; gap: 0.12rem; opacity: 0.5;
+        }
+        .indicator-button .key-hint { font-family: 'Space Mono', monospace; font-size: 0.58rem; opacity: 0.6; }
+        .indicator-button:hover { opacity: 0.8; transform: translateY(-1px); }
+        .indicator-button.active { opacity: 1; transform: translateY(-2px); }
+        .indicator-button:active { transform: scale(0.97) translateY(0); }
+
+        #btn-nva { background: var(--nva-bg); border-color: rgba(239,68,68,0.3); color: var(--nva-color); }
+        #btn-nva.active { background: rgba(239,68,68,0.18); border-color: var(--nva-color); box-shadow: 0 4px 20px rgba(239,68,68,0.25); }
+        #btn-sva { background: var(--sva-bg); border-color: rgba(245,158,11,0.3); color: var(--sva-color); }
+        #btn-sva.active { background: rgba(245,158,11,0.18); border-color: var(--sva-color); box-shadow: 0 4px 20px rgba(245,158,11,0.25); }
+        #btn-vaa { background: var(--vaa-bg); border-color: rgba(34,197,94,0.3); color: var(--vaa-color); }
+        #btn-vaa.active { background: rgba(34,197,94,0.18); border-color: var(--vaa-color); box-shadow: 0 4px 20px rgba(34,197,94,0.25); }
+
+        /* ── CONTROL BUTTONS ── */
+        .ctrl-btn {
+            font-family: 'Rajdhani', sans-serif;
+            font-size: 0.78rem; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
+            padding: 0.55rem 0.65rem; border-radius: 5px;
+            border: 1px solid var(--border); cursor: pointer;
+            transition: all 0.15s; background: var(--bg-elevated);
+            color: var(--text-secondary);
+            display: flex; align-items: center; justify-content: center;
+            gap: 0.3rem; white-space: nowrap;
+        }
+        .ctrl-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
+        .ctrl-btn:active { transform: scale(0.97); }
+        .ctrl-btn.active-green { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.4); color: #4ade80; }
+        .ctrl-btn.active-amber { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--accent-amber); }
+        .ctrl-btn.active-purple { background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.4); color: #c084fc; }
+
+        /* ── TIME CARDS ── */
+        .time-card { border-radius: 6px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.2rem; border: 1px solid; }
+        .time-card.nva-card { background: var(--nva-bg); border-color: rgba(239,68,68,0.2); }
+        .time-card.sva-card { background: var(--sva-bg); border-color: rgba(245,158,11,0.2); }
+        .time-card.vaa-card { background: var(--vaa-bg); border-color: rgba(34,197,94,0.2); }
+        .time-card-label { font-family: 'Rajdhani', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; }
+        .time-card-value { font-family: 'Space Mono', monospace; font-size: 0.95rem; font-weight: 700; }
+        .nva-card .time-card-label,.nva-card .time-card-value { color: var(--nva-color); }
+        .sva-card .time-card-label,.sva-card .time-card-value { color: var(--sva-color); }
+        .vaa-card .time-card-label,.vaa-card .time-card-value { color: var(--vaa-color); }
+
+        /* ── STATE INDICATOR ── */
+        #state-indicator { height: 3px; width: 100%; background: var(--border); transition: background 0.3s; }
+        #state-indicator.state-nva { background: linear-gradient(90deg,var(--nva-color),transparent); }
+        #state-indicator.state-sva { background: linear-gradient(90deg,var(--sva-color),transparent); }
+        #state-indicator.state-vaa { background: linear-gradient(90deg,var(--vaa-color),transparent); }
+        #state-indicator.state-paused { background: linear-gradient(90deg,#3b82f6,transparent); }
+
+        /* ── MINI DISPLAY ── */
+        #mini-display {
+            position: fixed; bottom: 20px; right: 20px;
+            z-index: 99999;
+            padding: 10px 14px; border-radius: 8px;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.6);
+            transition: all 0.25s; opacity: 1;
+            font-family: 'Space Mono', monospace;
+            text-align: center; touch-action: none; cursor: pointer;
+            border: 1px solid var(--border-bright);
+            background: var(--bg-panel); color: var(--text-primary);
+            min-width: 170px;
+        }
+        #mini-display.teleporting { box-shadow: 0 0 0 3px var(--accent-amber), 0 0 20px rgba(245,158,11,0.4); animation: pulse 1s infinite; }
+        @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
+
+        /* ─── CORREÇÃO TELA CHEIA: z-index máximo absoluto ─── */
+        #mini-display.fullscreen-active {
+            z-index: 2147483647 !important;
+            position: fixed !important;
+        }
+
+        #mini-display.minimized { width: 44px; height: 44px; padding: 0; overflow: hidden; border-radius: 6px; font-size: 1rem; line-height: 44px; min-width: unset; }
+        #mini-display.hidden-fully { display: none !important; }
+        #mini-display.size-small  { min-width: 130px; }
+        #mini-display.size-medium { min-width: 170px; }
+        #mini-display.size-large  { min-width: 220px; }
+
+        /* ── MODAL ── */
+        #message-box { background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); }
+        #report-modal-content {
+            background: var(--bg-panel); border: 1px solid var(--border-bright);
+            border-radius: 10px; color: var(--text-primary);
+            box-shadow: var(--shadow-modal);
+            transition: background 0.25s;
+        }
+        .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-primary); }
+
+        /* ── TABS ── */
+        .tab-btn {
+            font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 0.55rem 1rem; border-bottom: 2px solid transparent;
+            color: var(--text-muted); cursor: pointer; transition: all 0.15s;
+            background: none; border-top: none; border-left: none; border-right: none;
+        }
+        .tab-btn:hover { color: var(--text-secondary); }
+        .tab-btn.active-tab { border-bottom-color: var(--accent-amber); color: var(--accent-amber); }
+
+        /* ── TABLE ── */
+        .cv-table { width: 100%; border-collapse: collapse; }
+        .cv-table thead tr { background: var(--bg-elevated); }
+        .cv-table th { padding: 0.65rem 1rem; font-family: 'Rajdhani', sans-serif; font-size: 0.7rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); border-bottom: 1px solid var(--border); text-align: left; }
+        .cv-table td { padding: 0.7rem 1rem; border-bottom: 1px solid var(--border); font-size: 0.88rem; }
+        .cv-table tr:last-child td { border-bottom: none; }
+        .cv-table tbody tr:hover { background: var(--bg-elevated); }
+        .cv-table .total-row { background: var(--bg-elevated); font-weight: 700; }
+
+        /* ── EXPORT BOX ── */
+        .export-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
+        .export-label { font-family: 'Rajdhani', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
+
+        /* ── PIE CHART ── */
+        #pie-container {
+            display: flex; align-items: center; justify-content: center;
+            gap: 1.5rem; padding: 1rem 0; flex-wrap: wrap;
+        }
+        #pie-canvas { display: block; }
+        #pie-legend { display: flex; flex-direction: column; gap: 0.5rem; }
+        .pie-legend-item { display: flex; align-items: center; gap: 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.78rem; }
+        .pie-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
+
+        /* ── LOG ── */
+        .log-list { max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); }
+        .log-list::-webkit-scrollbar { width: 4px; }
+        .log-list::-webkit-scrollbar-track { background: transparent; }
+        .log-list::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
+
+        /* ── DRAG OVER ── */
+        .drag-over #video-placeholder { border-color: var(--accent-amber) !important; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
+
+        /* ── CLASSIFICATION RESULT ── */
+        #classification-result { background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem; min-height: 52px; font-size: 0.83rem; color: var(--text-muted); }
+
+        /* ── SCROLLBAR ── */
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: var(--bg-base); }
+        ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
+
+        /* ── KEYBOARD HINTS ── */
+        .kbd { display: inline-block; background: var(--bg-input); border: 1px solid var(--border-bright); border-radius: 3px; padding: 0 4px; font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--text-muted); line-height: 1.6; }
+
+        /* ── HISTORY CARD ── */
+        .history-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--accent-amber); }
+
+        /* ── THEME TOGGLE ── */
+        .theme-toggle-btn {
+            display: flex; align-items: center; gap: 0.4rem;
+            font-family: 'Rajdhani', sans-serif; font-size: 0.75rem; font-weight: 600;
+            letter-spacing: 0.08em; text-transform: uppercase;
+            padding: 0.3rem 0.65rem; border-radius: 4px;
+            background: var(--bg-elevated); color: var(--text-secondary);
+            border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
+        }
+        .theme-toggle-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
+
+        /* ── PRINT ── */
+        @media print {
+            body { background: white !important; color: black !important; }
+            #app-container,.no-print,#mini-display,#site-header,#state-indicator,#mobile-banner { display: none !important; }
+            #print-area,#print-area * { visibility: visible !important; }
+            #print-area { display: block !important; position: static !important; width: 100%; margin: 0; padding: 0; }
+            .printable-content { width: 100%; max-width: 800px; margin: 0 auto; padding: 40px; box-sizing: border-box; }
+            table { width: 100%; page-break-inside: auto; }
+            tr { page-break-inside: avoid; }
+            .printable-content .no-print-element { display: none !important; }
+            #print-area #excel-print-data { display: block !important; visibility: visible !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- MINI DISPLAY (floating) -->
+    <div id="mini-display"></div>
+
+    <!-- HEADER -->
+    <header id="site-header">
+        <div class="flex items-center gap-3">
+            <div class="logo">Chrono<span>View</span></div>
+            <span class="header-badge">v4.0 · T&M</span>
+        </div>
+        <div class="header-right">
+            <span id="activity-status" style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted)">PRONTO</span>
+
+            <!-- NOVO: Botão Modo Celular -->
+            <button id="btn-mobile-mode" class="theme-toggle-btn" title="Alternar modo celular" onclick="toggleMobileMode()">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3"/>
+                </svg>
+                <span id="mobile-btn-text">Celular</span>
+            </button>
+
+            <!-- NOVO: Botão Tema -->
+            <button id="btn-theme" class="theme-toggle-btn" title="Alternar tema claro/escuro" onclick="toggleTheme()">
+                <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M21.752 15.002A9.718 9.718 0 0118 15.75c-5.385 0-9.75-4.365-9.75-9.75 0-1.33.266-2.597.748-3.752A9.753 9.753 0 003 11.25C3 16.635 7.365 21 12.75 21a9.753 9.753 0 009.002-5.998z"/>
+                </svg>
+                <svg id="theme-icon-light" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px;display:none">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2.25m6.364.386l-1.591 1.591M21 12h-2.25m-.386 6.364l-1.591-1.591M12 18.75V21m-4.773-4.227l-1.591 1.591M5.25 12H3m4.227-4.773L5.636 5.636M15.75 12a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z"/>
+                </svg>
+                <span id="theme-btn-text">Claro</span>
+            </button>
+
+            <button id="btn-toggle-mini-display" onclick="toggleMiniDisplayHidden()" class="theme-toggle-btn">
+                HUD (F)
+            </button>
+        </div>
+    </header>
+
+    <!-- MOBILE BANNER -->
+    <div id="mobile-banner">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 1.5H8.25A2.25 2.25 0 006 3.75v16.5a2.25 2.25 0 002.25 2.25h7.5A2.25 2.25 0 0018 20.25V3.75a2.25 2.25 0 00-2.25-2.25H13.5m-3 0V3h3V1.5m-3 0h3m-3 8.25h3"/>
+        </svg>
+        MODO CELULAR ATIVO — Apenas cronômetro, sem vídeo
+    </div>
+
+    <!-- STATE INDICATOR -->
+    <div id="state-indicator"></div>
+
+    <!-- MAIN CONTENT -->
+    <div style="display:flex;flex:1;overflow:hidden">
+        <div id="main-layout-container">
+
+            <!-- ── VIDEO COLUMN ── -->
+            <div id="video-column">
+                <div id="video-area" class="panel">
+                    <div class="panel-header">
+                        <div class="panel-dot"></div>
+                        <span class="panel-header-title">Vídeo de Análise</span>
+                    </div>
+                    <div id="video-drop-zone">
+                        <div id="video-placeholder">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" style="width:44px;height:44px;color:var(--text-muted)">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125l-.621-9.93A1.125 1.125 0 012.507 7.5h16.986a1.125 1.125 0 011.128 1.07l-.621 9.93M6 18.375V7.875m0 0A1.125 1.125 0 017.125 6.75h9.75A1.125 1.125 0 0118 7.875v10.5"/>
+                            </svg>
+                            <p id="video-status">Arraste um arquivo de vídeo aqui,<br>use a URL de streaming ou selecione um arquivo local abaixo.</p>
+                        </div>
+                        <video id="analysis-video" controls></video>
+                    </div>
+                    <div class="video-controls-bar">
+                        <input type="url" id="video-url-input" placeholder="URL de streaming (OneDrive / SharePoint)..." class="cv-input" style="flex:1">
+                        <button id="btn-load-url" class="cv-btn btn-amber">Carregar</button>
+                        <label class="cv-btn btn-ghost" style="cursor:pointer">
+                            Arquivo
+                            <input type="file" id="video-file-input" accept="video/*" style="display:none">
+                        </label>
+                        <button id="btn-remove-video" class="cv-btn btn-danger" title="Remover vídeo">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="panel">
+                    <div class="panel-header">
+                        <div class="panel-dot" style="background:#2dd4bf"></div>
+                        <span class="panel-header-title">Consulta de Classificação</span>
+                        <span style="font-size:0.68rem;color:var(--text-muted);margin-left:auto">VAA · SVA · NVA</span>
+                    </div>
+                    <div class="panel-body">
+                        <div class="flex gap-2 mb-3">
+                            <input type="text" id="query-input" placeholder="Descreva a atividade... ex: apertar parafuso" class="cv-input" style="flex:1">
+                            <button id="btn-classify" class="cv-btn btn-teal">Classificar</button>
+                        </div>
+                        <div id="classification-result">
+                            <span style="color:var(--text-muted);font-size:0.78rem">O resultado aparecerá aqui.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── CHRONOMETER COLUMN ── -->
+            <div id="app-container">
+                <div>
+                    <div id="chronometer-display">00:00:00.0</div>
+                </div>
+
+                <div>
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Classificação</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button id="btn-nva" data-activity="NVA" class="indicator-button">NVA<span class="key-hint">[1]</span></button>
+                        <button id="btn-sva" data-activity="SVA" class="indicator-button">SVA<span class="key-hint">[2]</span></button>
+                        <button id="btn-vaa" data-activity="VAA" class="indicator-button">VAA<span class="key-hint">[3]</span></button>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Controles</div>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button id="btn-pause" class="ctrl-btn active-green" title="Pause/Iniciar (Espaço)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>
+                            <span id="pause-text">INICIAR</span><span class="kbd">SPC</span>
+                        </button>
+                        <button id="btn-2x" class="ctrl-btn" title="Velocidade 2× (X)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062A1.125 1.125 0 013 16.81V8.688zM12.3 8.688c0-.864.933-1.405 1.683-.977l7.108 4.062a1.125 1.125 0 010 1.953l-7.108 4.062a1.125 1.125 0 01-1.683-.977V8.688z"/></svg>
+                            <span id="speed-text">1×</span><span class="kbd">X</span>
+                        </button>
+                        <button id="btn-reset" class="ctrl-btn" title="Reiniciar (Shift)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0l3.181-3.181m0 0l-3.181-3.181m3.181 3.181l-3.181 3.181m3.181-3.181l3.181 3.181M12 21a9 9 0 100-18 9 9 0 000 18z"/></svg>
+                            REINICIAR<span class="kbd">SHF</span>
+                        </button>
+                        <button id="btn-report" class="ctrl-btn active-amber" title="Gerar Relatório (Enter)">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M9 17.25v1.007a3 3 0 01-.879 2.122L7.5 21h9l-.621-.621A3 3 0 0115 18.257V17.25m6-12V15a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 15V5.25m18 0A2.25 2.25 0 0018.75 3H5.25A2.25 2.25 0 003 5.25m18 0H3"/></svg>
+                            RELATÓRIO<span class="kbd">ENT</span>
+                        </button>
+                    </div>
+                </div>
+
+                <div>
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Tempos Acumulados</div>
+                    <div class="grid grid-cols-3 gap-2">
+                        <div class="time-card nva-card"><span class="time-card-label">NVA</span><span id="nva-time-display" class="time-card-value">00:00:00</span></div>
+                        <div class="time-card sva-card"><span class="time-card-label">SVA</span><span id="sva-time-display" class="time-card-value">00:00:00</span></div>
+                        <div class="time-card vaa-card"><span class="time-card-label">VAA</span><span id="vaa-time-display" class="time-card-value">00:00:00</span></div>
+                    </div>
+                </div>
+
+                <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;padding:0.65rem">
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Atalhos</div>
+                    <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;font-size:0.7rem;color:var(--text-muted)">
+                        <span><span class="kbd">1 2 3</span> Classificar</span>
+                        <span><span class="kbd">SPC</span> Play/Pause</span>
+                        <span><span class="kbd">X</span> Velocidade 2×</span>
+                        <span><span class="kbd">ENT</span> Relatório</span>
+                        <span><span class="kbd">SHF</span> Reiniciar</span>
+                        <span><span class="kbd">CTRL+Z</span> Desfazer</span>
+                        <span><span class="kbd">+/-</span> HUD size</span>
+                        <span><span class="kbd">F</span> HUD visível</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="print-area" class="hidden"></div>
+
+    <!-- ── MODAL DE RELATÓRIO ── -->
+    <div id="message-box" class="fixed inset-0 hidden items-center justify-center p-4 z-50">
+        <div id="report-modal-content" class="w-full max-w-4xl" style="max-height:90vh;overflow-y:auto;padding:1.75rem">
+
+            <div class="flex items-center justify-between mb-5">
+                <h2 class="modal-title">Relatório de Cronoanálise</h2>
+                <button id="btn-close-report-top" style="color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <div id="tab-nav" class="flex no-print" style="border-bottom:1px solid var(--border);margin-bottom:1.25rem">
+                <button id="tab-report"  data-tab="report"  class="tab-btn active-tab">Relatório</button>
+                <button id="tab-history" data-tab="history" class="tab-btn">Histórico</button>
+                <button id="tab-log"     data-tab="log"     class="tab-btn">Log</button>
+            </div>
+
+            <!-- ── REPORT TAB ── -->
+            <div id="report-tab-content">
+
+                <!-- Gráfico de pizza + tabela lado a lado -->
+                <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.25rem">
+
+                    <!-- PIE CHART (NOVO) -->
+                    <div style="flex-shrink:0">
+                        <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem">Distribuição</div>
+                        <div id="pie-container">
+                            <canvas id="pie-canvas" width="160" height="160"></canvas>
+                            <div id="pie-legend">
+                                <div class="pie-legend-item">
+                                    <div class="pie-legend-dot" style="background:var(--nva-color)"></div>
+                                    <span style="color:var(--nva-color)">NVA: <span id="leg-nva">0%</span></span>
+                                </div>
+                                <div class="pie-legend-item">
+                                    <div class="pie-legend-dot" style="background:var(--sva-color)"></div>
+                                    <span style="color:var(--sva-color)">SVA: <span id="leg-sva">0%</span></span>
+                                </div>
+                                <div class="pie-legend-item">
+                                    <div class="pie-legend-dot" style="background:var(--vaa-color)"></div>
+                                    <span style="color:var(--vaa-color)">VAA: <span id="leg-vaa">0%</span></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- TABELA -->
+                    <div style="flex:1;min-width:260px">
+                        <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem">Resultados Detalhados</div>
+                        <div style="border:1px solid var(--border);border-radius:8px;overflow:hidden">
+                            <table class="cv-table">
+                                <thead><tr>
+                                    <th>Indicador</th><th>Tempo</th><th>%</th>
+                                </tr></thead>
+                                <tbody>
+                                    <tr>
+                                        <td style="color:var(--nva-color);font-weight:600">NVA</td>
+                                        <td id="rep-nva-time" style="font-family:'Space Mono',monospace">00:00:00</td>
+                                        <td id="rep-nva-percent" style="font-family:'Space Mono',monospace">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--sva-color);font-weight:600">SVA</td>
+                                        <td id="rep-sva-time" style="font-family:'Space Mono',monospace">00:00:00</td>
+                                        <td id="rep-sva-percent" style="font-family:'Space Mono',monospace">0%</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="color:var(--vaa-color);font-weight:600">VAA</td>
+                                        <td id="rep-vaa-time" style="font-family:'Space Mono',monospace">00:00:00</td>
+                                        <td id="rep-vaa-percent" style="font-family:'Space Mono',monospace">0%</td>
+                                    </tr>
+                                    <tr class="total-row">
+                                        <td style="font-weight:700;color:var(--text-primary)">TOTAL</td>
+                                        <td id="rep-total-time" style="font-family:'Space Mono',monospace;font-weight:700">00:00:00</td>
+                                        <td style="font-family:'Space Mono',monospace;font-weight:700">100%</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- EXPORTAÇÃO -->
+                <div id="excel-copy-area" class="export-box no-print mb-5">
+                    <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:0.06em;color:var(--text-secondary);margin-bottom:0.65rem;text-transform:uppercase">Exportar para Planilha</div>
+
+                    <div class="export-label">
+                        Porcentagens &nbsp;
+                        <span style="color:var(--nva-color)">NVA</span> ·
+                        <span style="color:var(--sva-color)">SVA</span> ·
+                        <span style="color:var(--vaa-color)">VAA</span>
+                    </div>
+                    <div class="flex items-center gap-2 mb-3">
+                        <input type="text" id="excel-data" readonly class="cv-input" style="font-family:'Space Mono',monospace;flex:1" value="0% 0% 0%">
+                        <button id="btn-copy-excel" class="cv-btn btn-amber">Copiar</button>
+                    </div>
+
+                    <div class="export-label">
+                        Tempos Brutos &nbsp;
+                        <span style="color:var(--nva-color)">NVA</span> ·
+                        <span style="color:var(--sva-color)">SVA</span> ·
+                        <span style="color:var(--vaa-color)">VAA</span>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="text" id="excel-times" readonly class="cv-input" style="font-family:'Space Mono',monospace;flex:1" value="00:00:00 00:00:00 00:00:00">
+                        <button id="btn-copy-times" class="cv-btn btn-ghost">Copiar</button>
+                    </div>
+
+                    <div id="excel-print-data" style="display:none;margin-top:8px">
+                        <p style="font-size:0.82rem;color:var(--text-muted)">Porcentagens NVA | SVA | VAA:</p>
+                        <span class="excel-value" style="font-family:'Space Mono',monospace;display:block;margin-top:3px;font-weight:700"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ── HISTORY TAB ── -->
+            <div id="history-tab-content" class="hidden">
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.65rem">Medições Anteriores</div>
+                <div id="history-list" class="space-y-3">
+                    <p style="color:var(--text-muted);text-align:center;padding:2rem;background:var(--bg-elevated);border-radius:6px;font-size:0.83rem">Nenhuma medição salva ainda.</p>
+                </div>
+            </div>
+
+            <!-- ── LOG TAB ── -->
+            <div id="log-tab-content" class="hidden">
+                <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.65rem">Log de Eventos</div>
+                <p style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.65rem">Cada início de classificação. Use <span class="kbd">Ctrl+Z</span> para desfazer.</p>
+                <div id="current-log-list" class="log-list p-3">
+                    <p style="color:var(--text-muted);text-align:center;font-size:0.78rem">Nenhum evento registrado.</p>
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 mt-5 no-print">
+                <button id="btn-print-report" class="cv-btn btn-ghost">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
+                    Imprimir / PDF
+                </button>
+                <button id="btn-close-report" class="cv-btn btn-amber">Fechar</button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ══════════════════════════════════════════════════════════════
+         JAVASCRIPT
+    ══════════════════════════════════════════════════════════════ -->
+    <script>
+        // =====================================================================
+        // ESTADO
+        // =====================================================================
+        let startTime = 0, totalTime = 0, nvaTime = 0, svaTime = 0, vaaTime = 0;
+        let isRunning = false, isPaused = true, isDoubleSpeed = false;
+        let isMiniDisplayMinimized = false, isMiniDisplayHidden = false;
+        let currentActivity = null, currentSizeIndex = 2;
+        const MINI_DISPLAY_SIZES = ['size-small','size-medium','size-large'];
+        let activityLog = [], lastKnownActivity = null;
+        const classificationStartPoints = { NVA:[], SVA:[], VAA:[] };
+        let intervalId = null;
+        const UPDATE_INTERVAL_MS = 100;
+        let currentVideoFileName = "AnaliseSemVideo";
+        let measurementsHistory = [], historyCounter = 1;
+        let isTeleporting = false;
+        let isMobileMode = false;
+        let currentTheme = 'dark'; // 'dark' | 'light'
+
+        // =====================================================================
+        // DOM REFS
+        // =====================================================================
+        const display            = document.getElementById('chronometer-display');
+        const statusText         = document.getElementById('activity-status');
+        const btnPause           = document.getElementById('btn-pause');
+        const pauseText          = document.getElementById('pause-text');
+        const btn2x              = document.getElementById('btn-2x');
+        const speedText          = document.getElementById('speed-text');
+        const messageBox         = document.getElementById('message-box');
+        const reportModalContent = document.getElementById('report-modal-content');
+        const printArea          = document.getElementById('print-area');
+        const videoElement       = document.getElementById('analysis-video');
+        const videoStatus        = document.getElementById('video-status');
+        const videoUrlInput      = document.getElementById('video-url-input');
+        const btnLoadUrl         = document.getElementById('btn-load-url');
+        const miniDisplay        = document.getElementById('mini-display');
+        const videoInput         = document.getElementById('video-file-input');
+        const videoArea          = document.getElementById('video-area');
+        const videoPlaceholder   = document.getElementById('video-placeholder');
+        const stateIndicator     = document.getElementById('state-indicator');
+
+        let excelPrintDataElement = null;
+        let excelDataInput  = document.getElementById('excel-data');
+        let excelTimesInput = document.getElementById('excel-times');
+        let reportTab       = document.getElementById('tab-report');
+        let historyTab      = document.getElementById('tab-history');
+        let logTab          = document.getElementById('tab-log');
+        let reportTabContent  = document.getElementById('report-tab-content');
+        let historyTabContent = document.getElementById('history-tab-content');
+        let logTabContent     = document.getElementById('log-tab-content');
+        let historyList       = document.getElementById('history-list');
+        let currentLogList    = document.getElementById('current-log-list');
+
+        let originalReportHTML = reportModalContent.innerHTML;
+        let activeTab = 'report';
+
+        // =====================================================================
+        // TEMA
+        // =====================================================================
+        function toggleTheme() {
+            currentTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            applyTheme(currentTheme);
+            localStorage.setItem('cvTheme', currentTheme);
+        }
+
+        function applyTheme(theme) {
+            currentTheme = theme;
+            if (theme === 'light') {
+                document.documentElement.setAttribute('data-theme', 'light');
+                document.getElementById('theme-icon-dark').style.display  = 'none';
+                document.getElementById('theme-icon-light').style.display = 'block';
+                document.getElementById('theme-btn-text').textContent     = 'Escuro';
+            } else {
+                document.documentElement.removeAttribute('data-theme');
+                document.getElementById('theme-icon-dark').style.display  = 'block';
+                document.getElementById('theme-icon-light').style.display = 'none';
+                document.getElementById('theme-btn-text').textContent     = 'Claro';
+            }
+            // Redraw pie chart with new colors
+            if (typeof drawPieChart === 'function') {
+                const nP = parseInt(document.getElementById('rep-nva-percent').textContent)||0;
+                const sP = parseInt(document.getElementById('rep-sva-percent').textContent)||0;
+                const vP = parseInt(document.getElementById('rep-vaa-percent').textContent)||0;
+                if (nP+sP+vP > 0) drawPieChart(nP, sP, vP);
+            }
+        }
+
+        // =====================================================================
+        // MODO CELULAR
+        // =====================================================================
+        function toggleMobileMode() {
+            isMobileMode = !isMobileMode;
+            document.body.classList.toggle('mobile-mode', isMobileMode);
+            document.getElementById('mobile-btn-text').textContent = isMobileMode ? 'Desktop' : 'Celular';
+            localStorage.setItem('cvMobileMode', isMobileMode ? '1' : '0');
+        }
+
+        // =====================================================================
+        // PIE CHART
+        // =====================================================================
+        function getCSSVar(name) {
+            return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
+        }
+
+        function drawPieChart(nvaP, svaP, vaaP) {
+            const canvas = document.getElementById('pie-canvas');
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            const W = canvas.width, H = canvas.height;
+            const cx = W/2, cy = H/2, r = Math.min(W,H)/2 - 8;
+
+            ctx.clearRect(0, 0, W, H);
+
+            const nvaC = getCSSVar('--nva-color') || '#ef4444';
+            const svaC = getCSSVar('--sva-color') || '#f59e0b';
+            const vaaC = getCSSVar('--vaa-color') || '#22c55e';
+
+            const total = nvaP + svaP + vaaP;
+            if (total === 0) {
+                // Empty state circle
+                ctx.beginPath(); ctx.arc(cx, cy, r, 0, 2*Math.PI);
+                ctx.fillStyle = getCSSVar('--bg-elevated') || '#1a1e2a';
+                ctx.fill();
+                ctx.strokeStyle = getCSSVar('--border') || '#252a38';
+                ctx.lineWidth = 2; ctx.stroke();
+                return;
+            }
+
+            const segments = [
+                { value: nvaP, color: nvaC },
+                { value: svaP, color: svaC },
+                { value: vaaP, color: vaaC },
+            ].filter(s => s.value > 0);
+
+            let startAngle = -Math.PI / 2;
+
+            segments.forEach(seg => {
+                const sliceAngle = (seg.value / total) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                ctx.arc(cx, cy, r, startAngle, startAngle + sliceAngle);
+                ctx.closePath();
+                ctx.fillStyle = seg.color;
+                ctx.fill();
+                startAngle += sliceAngle;
+            });
+
+            // Center hole (donut)
+            ctx.beginPath(); ctx.arc(cx, cy, r * 0.42, 0, 2*Math.PI);
+            ctx.fillStyle = getCSSVar('--bg-panel') || '#13161e';
+            ctx.fill();
+
+            // Gap lines
+            startAngle = -Math.PI / 2;
+            segments.forEach(seg => {
+                const sliceAngle = (seg.value / total) * 2 * Math.PI;
+                ctx.beginPath();
+                ctx.moveTo(cx, cy);
+                const ex = cx + r * Math.cos(startAngle);
+                const ey = cy + r * Math.sin(startAngle);
+                ctx.lineTo(ex, ey);
+                ctx.strokeStyle = getCSSVar('--bg-panel') || '#13161e';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                startAngle += sliceAngle;
+            });
+
+            // Percentage labels on slices
+            startAngle = -Math.PI / 2;
+            ctx.font = `bold 11px 'Space Mono', monospace`;
+            ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+            segments.forEach(seg => {
+                const sliceAngle = (seg.value / total) * 2 * Math.PI;
+                if (seg.value >= 8) { // only label if slice is big enough
+                    const midAngle = startAngle + sliceAngle / 2;
+                    const labelR = r * 0.7;
+                    const lx = cx + labelR * Math.cos(midAngle);
+                    const ly = cy + labelR * Math.sin(midAngle);
+                    ctx.fillStyle = '#ffffff';
+                    ctx.fillText(`${seg.value}%`, lx, ly);
+                }
+                startAngle += sliceAngle;
+            });
+        }
+
+        // =====================================================================
+        // CLASSIFICAÇÃO
+        // =====================================================================
+        const classificationKnowledge = {
+            VAA: {
+                macros: ['Transformação'],
+                details: ['dobrar','cortar','furar','parafusar','encaixar','soldar','colar','inserir','identificar produto','pintar','juntar','acoplar','unir','engatar','conectar','montar','vedar','montagem','fixação','junção','tratamento','alteração','moldagem','apertar porca','rosquear','instalar','colocar vedação','aplicar adesivo','passar cola','polir','lixar','desbaste','soldagem','remover rebarba']
+            },
+            SVAA: {
+                macros: ['Picking/Supply (SVA)','Qualidade (Necessária)'],
+                details: ['segurar','pegar','posicionar','martelar','inspecionar','testar','calibrar','abastecer','separar','checar','etiquetar','lubrificar','limpar superfície','passar graxa','proteger','contar peças','mover carrinho','transportar palete','buscar material','levar ferramenta','desempilhar','colocar no gabarito','realizar medição','conferir torque','verificar lista','aplicar lubrificante','testar funcionalidade','verificar progressivo']
+            },
+            NVAA: {
+                macros: ['Desbalanceamento','Fator de Fadiga','Qualidade (desnecessária)','Outros'],
+                details: ['desembalar','abrir','remover excesso','desmontar','mascarar','buscar','levar','procurar','curvar','levantar','sentar','ficar','esperar','recontar','retrabalho','alinhar','espera','movimentar','andar','icamento','ajustes','limpeza','registro','ler observação']
+            }
+        };
+
+        function normalizeText(text) {
+            return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").trim();
+        }
+
+        function classifyActivity(query) {
+            const nq = normalizeText(query);
+            const resultDiv = document.getElementById('classification-result');
+            if (nq.length < 3) { resultDiv.innerHTML=`<span style="color:var(--nva-color);font-size:0.78rem;font-weight:600">Insira uma descrição mais detalhada.</span>`; return; }
+            let bestMatch = null, bestCategory = null;
+            for (const cat in classificationKnowledge) {
+                const dm = classificationKnowledge[cat].details.find(d => nq.includes(normalizeText(d)));
+                if (dm) { bestMatch=`Termo: <strong>"${dm}"</strong>`; bestCategory=cat; break; }
+                const mm = classificationKnowledge[cat].macros.find(m => nq.includes(normalizeText(m)));
+                if (!bestCategory && mm) { bestMatch=`Categoria: <strong>"${mm}"</strong>`; bestCategory=cat; }
+            }
+            if (!bestCategory) {
+                if (nq.includes('lubrificar')||nq.includes('graxa')||nq.includes('medicao')) { bestCategory='SVAA'; bestMatch='Inferido: <strong>inspeção/lubrificação</strong>'; }
+                else if (nq.includes('rebarba')||nq.includes('remover e limpar')) { bestCategory='VAA'; bestMatch='Inferido: <strong>remoção de rebarba</strong>'; }
+                else if (nq.includes('apertar')||nq.includes('acoplar')||nq.includes('juntar')) { bestCategory='VAA'; bestMatch='Inferido: <strong>apertar/acoplar</strong>'; }
+                else { bestCategory='NVAA'; bestMatch='Default Lean: <strong>NVA</strong>'; }
+            }
+            const cm = { VAA:{c:'var(--vaa-color)',bg:'var(--vaa-bg)',b:'rgba(34,197,94,0.25)'}, SVAA:{c:'var(--sva-color)',bg:'var(--sva-bg)',b:'rgba(245,158,11,0.25)'}, NVAA:{c:'var(--nva-color)',bg:'var(--nva-bg)',b:'rgba(239,68,68,0.25)'} };
+            const s = cm[bestCategory];
+            resultDiv.innerHTML=`<div style="padding:0.55rem 0.75rem;border:1px solid ${s.b};background:${s.bg};border-radius:5px"><div style="font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;color:${s.c};letter-spacing:0.06em">${bestCategory}</div><div style="font-size:0.76rem;color:var(--text-secondary);margin-top:2px">${bestMatch}</div></div>`;
+            document.getElementById('query-input').blur();
+        }
+
+        function attachClassificationListeners() {
+            const btn = document.getElementById('btn-classify');
+            const inp = document.getElementById('query-input');
+            if (btn&&inp) {
+                btn.addEventListener('click', ()=>classifyActivity(inp.value));
+                inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){e.preventDefault();classifyActivity(inp.value);} });
+            }
+        }
+
+        // =====================================================================
+        // PERSISTÊNCIA
+        // =====================================================================
+        function saveState() {
+            localStorage.setItem('cronoState', JSON.stringify({
+                totalTime,nvaTime,svaTime,vaaTime,
+                isDoubleSpeed,currentActivity,
+                measurementsHistory,historyCounter,activityLog,lastKnownActivity,
+                currentVideoFileName
+            }));
+        }
+
+        function loadState() {
+            const j = localStorage.getItem('cronoState');
+            if (!j) return false;
+            const s = JSON.parse(j);
+            totalTime=s.totalTime||0; nvaTime=s.nvaTime||0; svaTime=s.svaTime||0; vaaTime=s.vaaTime||0;
+            isDoubleSpeed=s.isDoubleSpeed||false; currentActivity=s.currentActivity||null;
+            measurementsHistory=s.measurementsHistory||[]; historyCounter=s.historyCounter||1;
+            activityLog=s.activityLog||[]; lastKnownActivity=s.lastKnownActivity||null;
+            currentVideoFileName=s.currentVideoFileName||"AnaliseSemVideo";
+            if (s.totalTime>0){isPaused=true;isRunning=false;}
+            updateDisplay(); renderHistory(); renderLog();
+            return true;
+        }
+
+        // =====================================================================
+        // FORMATAÇÃO
+        // =====================================================================
+        function formatTime(ms) {
+            if(ms<0)ms=0;
+            return `${String(Math.floor(ms/3600000)).padStart(2,'0')}:${String(Math.floor((ms%3600000)/60000)).padStart(2,'0')}:${String(Math.floor((ms%60000)/1000)).padStart(2,'0')}.${String(Math.floor((ms%1000)/100))}`;
+        }
+        function formatTimeSimple(ms){ return formatTime(ms).slice(0,-2); }
+        function formatMiniDisplayTime(ms,si){
+            if(ms<0)ms=0;
+            const h=String(Math.floor(ms/3600000)).padStart(2,'0');
+            const m=String(Math.floor((ms%3600000)/60000)).padStart(2,'0');
+            const s=String(Math.floor((ms%60000)/1000)).padStart(2,'0');
+            const t=String(Math.floor((ms%1000)/100));
+            if(si===2)return`${h}:${m}:${s}.${t}`;
+            if(si===1)return`${h}:${m}:${s}`;
+            const tot=Math.floor(ms/3600000)*60+Math.floor((ms%3600000)/60000)+(Math.floor((ms%60000)/1000)>=30?1:0);
+            return`${String(Math.floor(tot/60)).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
+        }
+
+        // =====================================================================
+        // MINI DISPLAY
+        // =====================================================================
+        function toggleMiniDisplayMinimized(){isMiniDisplayMinimized=!isMiniDisplayMinimized;miniDisplay.classList.toggle('minimized',isMiniDisplayMinimized);updateDisplay();saveState();}
+        function toggleMiniDisplayHidden(){isMiniDisplayHidden=!isMiniDisplayHidden;miniDisplay.classList.toggle('hidden-fully',isMiniDisplayHidden);updateDisplay();saveState();}
+        function changeMiniDisplaySize(d){const ni=currentSizeIndex+d;if(ni>=0&&ni<=2){miniDisplay.classList.remove(...MINI_DISPLAY_SIZES);currentSizeIndex=ni;miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);updateDisplay();saveState();}}
+        function moveMiniDisplay(dx,dy){
+            if(miniDisplay.style.right!=='auto'||miniDisplay.style.bottom!=='auto'){
+                const r=miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left=`${r.left}px`;miniDisplay.style.top=`${r.top}px`;
+                miniDisplay.style.right='auto';miniDisplay.style.bottom='auto';
+            }
+            let nx=(parseFloat(miniDisplay.style.left)||miniDisplay.offsetLeft)+dx;
+            let ny=(parseFloat(miniDisplay.style.top)||miniDisplay.offsetTop)+dy;
+            const mg=10;
+            nx=Math.max(mg,Math.min(nx,window.innerWidth-miniDisplay.offsetWidth-mg));
+            ny=Math.max(mg,Math.min(ny,window.innerHeight-miniDisplay.offsetHeight-mg));
+            miniDisplay.style.left=`${nx}px`;miniDisplay.style.top=`${ny}px`;
+        }
+
+        // =====================================================================
+        // UPDATE DISPLAY
+        // =====================================================================
+        function updateDisplay(){
+            if(isRunning&&!isPaused){
+                const el=(Date.now()-startTime)*(isDoubleSpeed?2:1);
+                totalTime+=el;
+                if(currentActivity==='NVA')nvaTime+=el;
+                else if(currentActivity==='SVA')svaTime+=el;
+                else if(currentActivity==='VAA')vaaTime+=el;
+                startTime=Date.now();
+                saveState();
+            }
+            display.textContent=formatTime(totalTime);
+            document.getElementById('nva-time-display').textContent=formatTimeSimple(nvaTime);
+            document.getElementById('sva-time-display').textContent=formatTimeSimple(svaTime);
+            document.getElementById('vaa-time-display').textContent=formatTimeSimple(vaaTime);
+
+            display.classList.remove('state-nva','state-sva','state-vaa');
+            if(isRunning&&!isPaused&&currentActivity) display.classList.add(`state-${currentActivity.toLowerCase()}`);
+
+            stateIndicator.classList.remove('state-nva','state-sva','state-vaa','state-paused');
+            if(isRunning&&!isPaused){if(currentActivity)stateIndicator.classList.add(`state-${currentActivity.toLowerCase()}`);}
+            else if(isPaused&&totalTime>0)stateIndicator.classList.add('state-paused');
+
+            let hs='PRONTO';
+            if(isRunning&&!isPaused){const sp=isDoubleSpeed?' 2×':'';hs=currentActivity?`${currentActivity}${sp}`:`ATIVO${sp}`;}
+            else if(isPaused&&totalTime>0)hs='PAUSADO';
+            statusText.textContent=hs;
+
+            speedText.textContent=isDoubleSpeed?'2×':'1×';
+            btn2x.classList.toggle('active-purple',isDoubleSpeed);
+
+            const isP=isPaused;
+            const pauseIcon=isP
+                ?`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>`
+                :`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5"/></svg>`;
+            btnPause.innerHTML=`${pauseIcon}<span id="pause-text">${isP?'INICIAR':'PAUSAR'}</span><span class="kbd">SPC</span>`;
+            btnPause.className=`ctrl-btn ${isP?'active-green':'active-amber'}`;
+
+            // ── MINI DISPLAY ──
+            // Detecta tela cheia de qualquer elemento, incluindo o vídeo
+            const isFs = !!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement);
+            miniDisplay.classList.toggle('fullscreen-active', isFs);
+
+            if(isMiniDisplayHidden){miniDisplay.classList.add('hidden-fully');return;}
+            miniDisplay.classList.remove('hidden-fully');
+
+            const miniCM={NVA:{border:'rgba(239,68,68,0.6)',text:'var(--nva-color)',label:'NVA'},SVA:{border:'rgba(245,158,11,0.6)',text:'var(--sva-color)',label:'SVA'},VAA:{border:'rgba(34,197,94,0.6)',text:'var(--vaa-color)',label:'VAA'}};
+            let mLabel=isP?'PAUSADO':'ATIVO';
+            let mBorder='var(--border-bright)';
+            let mColor='var(--text-secondary)';
+            if(isRunning&&!isP&&currentActivity){const mc=miniCM[currentActivity];mBorder=mc.border;mColor=mc.text;mLabel=mc.label;}
+            else if(!isRunning)mLabel='PRONTO';
+            miniDisplay.style.borderColor=mBorder;
+
+            const ct=formatMiniDisplayTime(totalTime,currentSizeIndex);
+            if(isMiniDisplayMinimized){
+                const sh=currentActivity?currentActivity.charAt(0):(isP?'P':'R');
+                miniDisplay.innerHTML=`<button onclick="toggleMiniDisplayMinimized()" style="width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:1.1rem;font-weight:700;color:${mColor};background:none;border:none;cursor:pointer">${sh}</button>`;
+            } else {
+                miniDisplay.innerHTML=`
+                    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px" class="drag-handle">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:0.7rem;font-weight:600;letter-spacing:0.1em;text-transform:uppercase;color:${mColor}">${mLabel}${isDoubleSpeed?' 2×':''}</span>
+                        <div style="display:flex;gap:3px">
+                            <button onclick="toggleMiniDisplayMinimized()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px" title="Minimizar">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:11px;height:11px"><path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12h-15"/></svg>
+                            </button>
+                            <button onclick="toggleMiniDisplayHidden()" style="background:none;border:none;cursor:pointer;color:var(--text-muted);padding:2px" title="Fechar">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:11px;height:11px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div style="font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:${mColor};letter-spacing:0.04em">${ct}</div>`;
+            }
+        }
+
+        // =====================================================================
+        // TIMER
+        // =====================================================================
+        function startTimer(){if(intervalId)return;startTime=Date.now();intervalId=setInterval(()=>{if(!isPaused){isRunning=true;updateDisplay();}},UPDATE_INTERVAL_MS);}
+        function stopTimer(){
+            if(isRunning&&!isPaused){
+                const el=(Date.now()-startTime)*(isDoubleSpeed?2:1);
+                totalTime+=el;
+                if(currentActivity==='NVA')nvaTime+=el;
+                else if(currentActivity==='SVA')svaTime+=el;
+                else if(currentActivity==='VAA')vaaTime+=el;
+            }
+            clearInterval(intervalId);intervalId=null;isRunning=false;
+        }
+        function syncPause(p){if(p&&!isPaused){isPaused=true;stopTimer();updateDisplay();}else if(!p&&isPaused){isPaused=false;startTimer();updateDisplay();}}
+        function syncSpeed(r){const sd=r===2.0;if(sd!==isDoubleSpeed){isDoubleSpeed=sd;updateDisplay();}}
+
+        // =====================================================================
+        // AÇÕES
+        // =====================================================================
+        function setActivity(activity){
+            if(isPaused){if(videoElement.src&&videoElement.paused)videoElement.play();else{isPaused=false;startTimer();}}
+            if(currentActivity!==activity){activityLog.push({time:totalTime,activity});if(videoElement.src)classificationStartPoints[activity].push(videoElement.currentTime);}
+            currentActivity=activity;lastKnownActivity=activity;
+            document.querySelectorAll('.indicator-button').forEach(b=>{b.classList.remove('active');b.style.opacity='0.4';});
+            const ab=document.getElementById(`btn-${activity.toLowerCase()}`);
+            ab.classList.add('active');ab.style.opacity='1';
+            updateDisplay();renderLog();saveState();
+        }
+
+        function togglePause(isSync=false){
+            if(!isSync&&videoElement.src){if(videoElement.paused)videoElement.play();else videoElement.pause();return;}
+            isPaused=!isPaused;
+            if(!isPaused)startTimer();else stopTimer();
+            document.querySelectorAll('.indicator-button').forEach(b=>{b.classList.remove('active');b.style.opacity=isPaused?'0.4':'0.5';});
+            if(isPaused)currentActivity=null;
+            updateDisplay();saveState();
+        }
+
+        function toggleSpeed(){isDoubleSpeed=!isDoubleSpeed;if(videoElement.src)videoElement.playbackRate=isDoubleSpeed?2.0:1.0;updateDisplay();saveState();}
+
+        // =====================================================================
+        // DESFAZER
+        // =====================================================================
+        function undoLastEvent(){
+            if(activityLog.length===0)return;
+            const wr=isRunning&&!isPaused;if(wr)stopTimer();
+            activityLog.pop();
+            const rt=activityLog.length>0?activityLog[activityLog.length-1].time:0;
+            totalTime=rt;nvaTime=svaTime=vaaTime=0;
+            for(let i=0;i<activityLog.length-1;i++){
+                const dur=activityLog[i+1].time-activityLog[i].time;
+                if(activityLog[i].activity==='NVA')nvaTime+=dur;
+                else if(activityLog[i].activity==='SVA')svaTime+=dur;
+                else if(activityLog[i].activity==='VAA')vaaTime+=dur;
+            }
+            currentActivity=activityLog.length>0?activityLog[activityLog.length-1].activity:null;
+            if(videoElement.src)videoElement.currentTime=rt/1000;
+            if(wr){isPaused=false;startTimer();}else{isPaused=true;isRunning=false;}
+            updateDisplay();renderLog();saveState();
+        }
+
+        // =====================================================================
+        // RESET
+        // =====================================================================
+        function saveAndResetTimer(){
+            if(totalTime>0){
+                if(!window.confirm(`ATENÇÃO: Deseja SALVAR (${formatTimeSimple(totalTime)}) e ZERAR o cronômetro?`))return;
+                stopTimer();isPaused=true;
+                let nP=Math.round((nvaTime/totalTime)*100)||0;
+                let sP=Math.round((svaTime/totalTime)*100)||0;
+                let vP=100-nP-sP;
+                if(vP<0){vP=0;nP=100-sP;if(nP<0)nP=0;}
+                saveMeasurement(nP,sP,vP,JSON.parse(JSON.stringify(classificationStartPoints)));
+                activityLog=[];localStorage.removeItem('cronoState');resetTimer();
+            } else resetTimer();
+        }
+
+        function resetTimer(){
+            stopTimer();totalTime=nvaTime=svaTime=vaaTime=0;
+            isRunning=false;isPaused=true;isDoubleSpeed=false;currentActivity=null;
+            classificationStartPoints.NVA.length=0;classificationStartPoints.SVA.length=0;classificationStartPoints.VAA.length=0;
+            currentVideoFileName="AnaliseSemVideo";
+            if(videoElement.src){videoElement.pause();videoElement.currentTime=0;videoElement.playbackRate=1.0;}
+            document.querySelectorAll('.indicator-button').forEach(b=>{b.classList.remove('active');b.style.opacity='0.5';});
+            closeReport();
+            if(excelDataInput)excelDataInput.value="0% 0% 0%";
+            if(excelTimesInput)excelTimesInput.value="00:00:00 00:00:00 00:00:00";
+            updateDisplay();renderLog();
+            reFetchModalElements();attachReportModalListeners();saveState();
+        }
+
+        // =====================================================================
+        // MODAL
+        // =====================================================================
+        function reFetchModalElements(){
+            excelDataInput    = document.getElementById('excel-data');
+            excelTimesInput   = document.getElementById('excel-times');
+            reportTab         = document.getElementById('tab-report');
+            historyTab        = document.getElementById('tab-history');
+            logTab            = document.getElementById('tab-log');
+            reportTabContent  = document.getElementById('report-tab-content');
+            historyTabContent = document.getElementById('history-tab-content');
+            logTabContent     = document.getElementById('log-tab-content');
+            historyList       = document.getElementById('history-list');
+            currentLogList    = document.getElementById('current-log-list');
+            excelPrintDataElement = document.querySelector('#excel-print-data .excel-value');
+        }
+
+        function renderHistory(){
+            if(!historyList){reFetchModalElements();if(!historyList)return;}
+            if(measurementsHistory.length===0){historyList.innerHTML=`<p style="color:var(--text-muted);text-align:center;padding:2rem;background:var(--bg-elevated);border-radius:6px;font-size:0.83rem">Nenhuma medição salva ainda.</p>`;return;}
+            historyList.innerHTML=measurementsHistory.map(m=>`
+                <div class="history-card" data-id="${m.id}">
+                    <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;gap:0.5rem">
+                            <span id="name-display-${m.id}" style="font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;color:var(--text-primary);cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="Clique para editar">${m.name}</span>
+                            <input type="text" id="name-input-${m.id}" value="${m.name}" style="display:none;font-family:'Rajdhani',sans-serif;font-size:0.95rem;font-weight:700;border:none;border-bottom:1px solid var(--accent-amber);background:transparent;color:var(--text-primary);outline:none;width:100%">
+                        </div>
+                        <p style="font-size:0.72rem;color:var(--text-muted);margin-top:2px;font-family:'Space Mono',monospace">Total: ${formatTimeSimple(m.totalTime)} · NVA: ${m.nvaPercent}% · SVA: ${m.svaPercent}% · VAA: ${m.vaaPercent}%</p>
+                        <p style="font-size:0.68rem;color:var(--text-muted);margin-top:2px">${m.timestamp}</p>
+                    </div>
+                    <button data-id="${m.id}" class="btn-delete-history" style="color:var(--nva-color);opacity:0.5;background:none;border:none;cursor:pointer;padding:0.25rem;margin-left:0.5rem">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width:15px;height:15px"><path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.166L15.9 5.214M3 5.214A2.25 2.25 0 015.214 3h13.435a2.25 2.25 0 012.23 2.158M16.5 6l-1.442 1.442m-5.464 5.464L4.5 18.5"/></svg>
+                    </button>
+                </div>`).join('');
+            measurementsHistory.forEach(m=>{
+                const disp=document.getElementById(`name-display-${m.id}`);
+                const inp=document.getElementById(`name-input-${m.id}`);
+                const del=document.querySelector(`.btn-delete-history[data-id="${m.id}"]`);
+                if(disp&&inp){
+                    disp.addEventListener('click',()=>{disp.style.display='none';inp.style.display='block';inp.focus();});
+                    const sv=()=>{const n=inp.value.trim()||`Medição ${m.id}`;const it=measurementsHistory.find(x=>x.id===m.id);if(it){it.name=n;disp.textContent=n;}inp.style.display='none';disp.style.display='block';};
+                    inp.addEventListener('blur',sv);inp.addEventListener('keydown',e=>{if(e.key==='Enter')sv();});
+                }
+                if(del)del.addEventListener('click',e=>{measurementsHistory=measurementsHistory.filter(x=>x.id!==parseInt(e.currentTarget.dataset.id));renderHistory();saveState();});
+            });
+        }
+
+        function renderLog(){
+            if(!currentLogList){reFetchModalElements();if(!currentLogList)return;}
+            if(activityLog.length===0){currentLogList.innerHTML='<p style="color:var(--text-muted);text-align:center;font-size:0.78rem;padding:1rem">Nenhum evento registrado.</p>';return;}
+            const cm={NVA:'var(--nva-color)',SVA:'var(--sva-color)',VAA:'var(--vaa-color)'};
+            currentLogList.innerHTML=activityLog.slice().reverse().map(l=>`
+                <div style="padding:0.45rem 0.7rem;border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+                    <span style="font-family:'Space Mono',monospace;font-size:0.75rem;color:var(--text-muted)">${formatTimeSimple(l.time)}</span>
+                    <span style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;color:${cm[l.activity]||'var(--text-secondary)'}">${l.activity}</span>
+                </div>`).join('');
+        }
+
+        // =====================================================================
+        // GERAR RELATÓRIO (com gráfico de pizza)
+        // =====================================================================
+        function generateReport(){
+            stopTimer();isPaused=true;updateDisplay();
+            reFetchModalElements();
+
+            if(totalTime===0){
+                if(reportTabContent)reportTabContent.innerHTML=`<p style="text-align:center;padding:3rem;color:var(--text-muted);font-size:0.88rem">Nenhum tempo registrado para gerar o relatório.</p>`;
+                switchTab('report');
+                messageBox.classList.remove('hidden');messageBox.classList.add('flex');
+                return;
+            }
+
+            if(reportTabContent&&reportTabContent.innerHTML.includes('Nenhum tempo registrado')){
+                reportModalContent.innerHTML=originalReportHTML;
+                attachReportModalListeners();reFetchModalElements();
+            }
+
+            const total=totalTime;
+            let nP=Math.round((nvaTime/total)*100)||0;
+            let sP=Math.round((svaTime/total)*100)||0;
+            let vP=100-nP-sP;
+            if(total===0){nP=sP=vP=0;}
+            else if(vP<0){vP=0;const sm=nP+sP;if(sm>0){nP=Math.round(nP+(100-sm)*(nP/sm));sP=100-nP;}else{nP=sP=0;vP=100;}}
+
+            saveMeasurement(nP,sP,vP,JSON.parse(JSON.stringify(classificationStartPoints)));
+
+            document.getElementById('rep-nva-time').textContent=formatTimeSimple(nvaTime);
+            document.getElementById('rep-sva-time').textContent=formatTimeSimple(svaTime);
+            document.getElementById('rep-vaa-time').textContent=formatTimeSimple(vaaTime);
+            document.getElementById('rep-total-time').textContent=formatTimeSimple(total);
+            document.getElementById('rep-nva-percent').textContent=`${nP}%`;
+            document.getElementById('rep-sva-percent').textContent=`${sP}%`;
+            document.getElementById('rep-vaa-percent').textContent=`${vP}%`;
+
+            // Atualiza legenda do gráfico
+            document.getElementById('leg-nva').textContent=`${nP}%`;
+            document.getElementById('leg-sva').textContent=`${sP}%`;
+            document.getElementById('leg-vaa').textContent=`${vP}%`;
+
+            excelDataInput.value=`${nP}% ${sP}% ${vP}%`;
+            excelTimesInput.value=`${formatTimeSimple(nvaTime)} ${formatTimeSimple(svaTime)} ${formatTimeSimple(vaaTime)}`;
+            if(excelPrintDataElement)excelPrintDataElement.textContent=`${nP}% | ${sP}% | ${vP}%`;
+
+            switchTab('report');
+            messageBox.classList.remove('hidden');messageBox.classList.add('flex');
+
+            // Desenha o gráfico depois do modal aparecer
+            requestAnimationFrame(()=>drawPieChart(nP,sP,vP));
+        }
+
+        function closeReport(){
+            messageBox.classList.add('hidden');messageBox.classList.remove('flex');
+            if(reportTabContent&&reportTabContent.innerHTML.includes('Nenhum tempo registrado')){
+                reportModalContent.innerHTML=originalReportHTML;
+                attachReportModalListeners();reFetchModalElements();
+            }
+        }
+
+        function switchTab(tabName){
+            activeTab=tabName;
+            [reportTab,historyTab,logTab].forEach(tab=>{
+                if(!tab)return;
+                const ia=tab.dataset.tab===tabName;
+                tab.classList.toggle('active-tab',ia);
+                document.getElementById(`${tab.dataset.tab}-tab-content`).style.display=ia?'block':'none';
+            });
+            if(tabName==='history')renderHistory();
+            else if(tabName==='log')renderLog();
+            else if(tabName==='report'){
+                // Redraw chart when switching back
+                const nP=parseInt(document.getElementById('rep-nva-percent').textContent)||0;
+                const sP=parseInt(document.getElementById('rep-sva-percent').textContent)||0;
+                const vP=parseInt(document.getElementById('rep-vaa-percent').textContent)||0;
+                requestAnimationFrame(()=>drawPieChart(nP,sP,vP));
+            }
+        }
+
+        function attachReportModalListeners(){
+            reFetchModalElements();
+            const c1=document.getElementById('btn-close-report');
+            const c2=document.getElementById('btn-close-report-top');
+            if(c1)c1.addEventListener('click',closeReport);
+            if(c2)c2.addEventListener('click',closeReport);
+            document.getElementById('btn-print-report').addEventListener('click',printReport);
+            document.getElementById('btn-copy-excel').addEventListener('click',()=>copyField('excel-data'));
+            document.getElementById('btn-copy-times').addEventListener('click',()=>copyField('excel-times'));
+            document.getElementById('tab-report').addEventListener('click',()=>switchTab('report'));
+            document.getElementById('tab-history').addEventListener('click',()=>switchTab('history'));
+            document.getElementById('tab-log').addEventListener('click',()=>switchTab('log'));
+        }
+
+        async function copyField(id){
+            const f=document.getElementById(id);
+            const b=id==='excel-data'?document.getElementById('btn-copy-excel'):document.getElementById('btn-copy-times');
+            const orig=b.textContent;
+            try{await navigator.clipboard.writeText(f.value);b.textContent='✓ Copiado';}
+            catch{f.select();f.setSelectionRange(0,99999);try{document.execCommand('copy');b.textContent='✓ Copiado';}catch{b.textContent='Erro!';}}
+            setTimeout(()=>{b.textContent=orig;},1500);
+        }
+
+        function saveMeasurement(nP,sP,vP,pts){
+            let fn=currentVideoFileName==="AnaliseSemVideo"?`Medição ${historyCounter}`:currentVideoFileName;
+            if(currentVideoFileName!=="AnaliseSemVideo"){let sf=1;while(measurementsHistory.some(m=>m.name===fn)){sf++;fn=`${currentVideoFileName} (${sf})`;}}
+            measurementsHistory.push({id:historyCounter++,name:fn,timestamp:new Date().toLocaleString('pt-BR'),totalTime,nvaTime,svaTime,vaaTime,nvaPercent:nP,svaPercent:sP,vaaPercent:vP,classificationPoints:pts,eventLog:JSON.parse(JSON.stringify(activityLog))});
+            renderHistory();saveState();
+        }
+
+        function printReport() {
+            // Coleta dados atuais
+            const nP = parseInt(document.getElementById('rep-nva-percent').textContent) || 0;
+            const sP = parseInt(document.getElementById('rep-sva-percent').textContent) || 0;
+            const vP = parseInt(document.getElementById('rep-vaa-percent').textContent) || 0;
+            const nT = document.getElementById('rep-nva-time').textContent || '00:00:00';
+            const sT = document.getElementById('rep-sva-time').textContent || '00:00:00';
+            const vT = document.getElementById('rep-vaa-time').textContent || '00:00:00';
+            const totT = document.getElementById('rep-total-time').textContent || '00:00:00';
+            const excelVals  = document.getElementById('excel-data').value  || '0% 0% 0%';
+            const excelTimes = document.getElementById('excel-times').value || '00:00:00 00:00:00 00:00:00';
+            const videoName  = currentVideoFileName === 'AnaliseSemVideo' ? 'Análise sem vídeo' : currentVideoFileName;
+            const timestamp  = new Date().toLocaleString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
+
+            // Gera canvas do gráfico como imagem base64 (resolução maior para PDF)
+            const oc = document.createElement('canvas');
+            oc.width = 320; oc.height = 320;
+            const octx = oc.getContext('2d');
+            const ocx = 160, ocy = 160, or = 136;
+            const NVC = '#ef4444', SVC = '#facc15', VAC = '#22c55e', BG = '#13161e';
+            const total = nP + sP + vP;
+            if (total > 0) {
+                const segs = [{v:nP,c:NVC},{v:sP,c:SVC},{v:vP,c:VAC}].filter(s=>s.v>0);
+                let sa = -Math.PI/2;
+                segs.forEach(s=>{const a=(s.v/total)*2*Math.PI;octx.beginPath();octx.moveTo(ocx,ocy);octx.arc(ocx,ocy,or,sa,sa+a);octx.closePath();octx.fillStyle=s.c;octx.fill();sa+=a;});
+                octx.beginPath();octx.arc(ocx,ocy,or*0.40,0,2*Math.PI);octx.fillStyle=BG;octx.fill();
+                sa=-Math.PI/2;
+                segs.forEach(s=>{const a=(s.v/total)*2*Math.PI;octx.beginPath();octx.moveTo(ocx,ocy);octx.lineTo(ocx+or*Math.cos(sa),ocy+or*Math.sin(sa));octx.strokeStyle=BG;octx.lineWidth=3;octx.stroke();sa+=a;});
+                sa=-Math.PI/2;
+                octx.font="bold 24px 'Space Mono',monospace";octx.textAlign='center';octx.textBaseline='middle';
+                segs.forEach(s=>{const a=(s.v/total)*2*Math.PI;if(s.v>=5){const ma=sa+a/2;octx.fillStyle='#fff';octx.fillText(`${s.v}%`,ocx+or*0.67*Math.cos(ma),ocy+or*0.67*Math.sin(ma));}sa+=a;});
+            }
+            const chartImg = oc.toDataURL('image/png');
+
+            // Barra horizontal helper
+            const bar = (label, color, pct, time) => `
+                <div style="margin-bottom:16px">
+                    <div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:6px">
+                        <span style="font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;color:${color}">${label}</span>
+                        <span style="font-family:'Space Mono',monospace;font-size:11px;color:#8a90a8">${time}</span>
+                    </div>
+                    <div style="background:#252a38;border-radius:4px;height:10px;width:100%;overflow:hidden">
+                        <div style="background:${color};width:${pct}%;height:100%;border-radius:4px"></div>
+                    </div>
+                    <div style="text-align:right;margin-top:4px;font-family:'Space Mono',monospace;font-size:11px;color:${color};font-weight:700">${pct}%</div>
+                </div>`;
+
+            // HTML completo do PDF — dark theme fiel ao app
+            const html = `<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>${videoName} — ChronoView</title>
+<link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Rajdhani:wght@500;600;700&family=DM+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+@page{size:A4;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:#0d0f14;color:#e8eaf0;width:210mm;min-height:297mm}
+.stripe{height:5px;background:linear-gradient(90deg,#ef4444 0%,#ef4444 33.3%,#facc15 33.3%,#facc15 66.6%,#22c55e 66.6%,#22c55e 100%)}
+.page{padding:30px 40px 40px}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;padding-bottom:20px;border-bottom:1px solid #252a38;margin-bottom:24px}
+.brand{font-family:'Rajdhani',sans-serif;font-size:26px;font-weight:700;letter-spacing:0.12em;text-transform:uppercase;color:#e8eaf0}
+.brand span{color:#f59e0b}
+.brand-sub{font-family:'Space Mono',monospace;font-size:9px;color:#4a5068;letter-spacing:0.1em;text-transform:uppercase;margin-top:4px}
+.vinfo{text-align:right}
+.vlabel{font-family:'Space Mono',monospace;font-size:9px;color:#4a5068;text-transform:uppercase;letter-spacing:0.1em;margin-bottom:3px}
+.vname{font-family:'Rajdhani',sans-serif;font-size:18px;font-weight:700;color:#f59e0b;letter-spacing:0.06em;margin-bottom:3px}
+.vts{font-family:'Space Mono',monospace;font-size:10px;color:#8a90a8}
+.slabel{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#4a5068;margin-bottom:10px;display:flex;align-items:center;gap:8px}
+.slabel::before{content:'';display:inline-block;width:4px;height:4px;border-radius:50%;background:#f59e0b}
+.total-box{background:#1a1e2a;border:1px solid #353d54;border-radius:8px;padding:12px 20px;text-align:center;margin-bottom:22px}
+.total-lbl{font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#4a5068;margin-bottom:3px}
+.total-val{font-family:'Space Mono',monospace;font-size:30px;font-weight:700;color:#e8eaf0;letter-spacing:0.04em}
+.mgrid{display:flex;gap:24px;margin-bottom:24px;align-items:flex-start}
+.ccol{flex-shrink:0;width:210px}
+.ccol img{width:170px;height:170px;display:block;margin:0 auto 14px}
+.legend{display:flex;flex-direction:column;gap:8px}
+.li{display:flex;align-items:center;gap:8px;font-family:'Space Mono',monospace;font-size:11px}
+.ldot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.tcol{flex:1}
+table{width:100%;border-collapse:collapse;background:#13161e;border-radius:8px;overflow:hidden;border:1px solid #252a38}
+thead tr{background:#1a1e2a}
+th{padding:10px 14px;font-family:'Rajdhani',sans-serif;font-size:10px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#4a5068;border-bottom:1px solid #252a38;text-align:left}
+td{padding:11px 14px;border-bottom:1px solid #252a38;font-size:13px}
+tr:last-child td{border-bottom:none}
+.tr-total td{background:#1a1e2a;font-weight:700;font-size:14px}
+.bars-box{background:#13161e;border:1px solid #252a38;border-radius:8px;padding:18px 22px;margin-bottom:22px}
+.exp-box{background:#1a1e2a;border:1px solid #252a38;border-radius:8px;padding:14px 18px;margin-bottom:22px}
+.exp-row{display:flex;gap:16px}
+.exp-blk{flex:1}
+.exp-lbl{font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:#4a5068;margin-bottom:5px}
+.exp-val{font-family:'Space Mono',monospace;font-size:13px;font-weight:700;color:#e8eaf0;background:#0f1117;border:1px solid #353d54;border-radius:4px;padding:6px 10px}
+.ftr{border-top:1px solid #252a38;padding-top:14px;display:flex;justify-content:space-between;align-items:center}
+.ftr-brand{font-family:'Rajdhani',sans-serif;font-size:11px;letter-spacing:0.1em;text-transform:uppercase;color:#4a5068}
+.ftr-brand span{color:#f59e0b}
+.ftr-meta{font-family:'Space Mono',monospace;font-size:9px;color:#4a5068;text-align:right}
+</style>
+</head>
+<body>
+<div class="stripe"></div>
+<div class="page">
+  <div class="hdr">
+    <div>
+      <div class="brand">Chrono<span>View</span></div>
+      <div class="brand-sub">Análise de Tempos &amp; Métodos · v4.0</div>
+    </div>
+    <div class="vinfo">
+      <div class="vlabel">Fonte de análise</div>
+      <div class="vname">${videoName}</div>
+      <div class="vts">${timestamp}</div>
+    </div>
+  </div>
+
+  <div class="total-box">
+    <div class="total-lbl">Tempo Total Analisado</div>
+    <div class="total-val">${totT}</div>
+  </div>
+
+  <div class="slabel">Distribuição &amp; Resultados Detalhados</div>
+  <div class="mgrid">
+    <div class="ccol">
+      <img src="${chartImg}" alt="Gráfico donut">
+      <div class="legend">
+        <div class="li"><div class="ldot" style="background:#ef4444"></div><span style="color:#ef4444">NVA: ${nP}%</span></div>
+        <div class="li"><div class="ldot" style="background:#facc15"></div><span style="color:#facc15">SVA: ${sP}%</span></div>
+        <div class="li"><div class="ldot" style="background:#22c55e"></div><span style="color:#22c55e">VAA: ${vP}%</span></div>
+      </div>
+    </div>
+    <div class="tcol">
+      <table>
+        <thead><tr><th>Indicador</th><th>Tempo Acumulado</th><th>%</th></tr></thead>
+        <tbody>
+          <tr>
+            <td style="color:#ef4444;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:0.06em">NVA — Não Agrega Valor</td>
+            <td style="font-family:'Space Mono',monospace">${nT}</td>
+            <td style="font-family:'Space Mono',monospace;color:#ef4444;font-weight:700">${nP}%</td>
+          </tr>
+          <tr>
+            <td style="color:#facc15;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:0.06em">SVA — Suporte Agrega Valor</td>
+            <td style="font-family:'Space Mono',monospace">${sT}</td>
+            <td style="font-family:'Space Mono',monospace;color:#facc15;font-weight:700">${sP}%</td>
+          </tr>
+          <tr>
+            <td style="color:#22c55e;font-weight:700;font-family:'Rajdhani',sans-serif;font-size:14px;letter-spacing:0.06em">VAA — Valor Agregado</td>
+            <td style="font-family:'Space Mono',monospace">${vT}</td>
+            <td style="font-family:'Space Mono',monospace;color:#22c55e;font-weight:700">${vP}%</td>
+          </tr>
+          <tr class="tr-total">
+            <td style="font-family:'Rajdhani',sans-serif;font-size:15px;letter-spacing:0.06em;color:#e8eaf0">TOTAL</td>
+            <td style="font-family:'Space Mono',monospace">${totT}</td>
+            <td style="font-family:'Space Mono',monospace;color:#e8eaf0">100%</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="slabel" style="margin-top:4px">Distribuição por Barra</div>
+  <div class="bars-box">
+    ${bar('NVA — Não Agrega Valor','#ef4444',nP,nT)}
+    ${bar('SVA — Suporte Agrega Valor','#facc15',sP,sT)}
+    ${bar('VAA — Valor Agregado','#22c55e',vP,vT)}
+  </div>
+
+  <div class="slabel">Dados para Planilha</div>
+  <div class="exp-box">
+    <div class="exp-row">
+      <div class="exp-blk">
+        <div class="exp-lbl">Porcentagens — NVA · SVA · VAA</div>
+        <div class="exp-val">${excelVals}</div>
+      </div>
+      <div class="exp-blk">
+        <div class="exp-lbl">Tempos Brutos — NVA · SVA · VAA</div>
+        <div class="exp-val">${excelTimes}</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ftr">
+    <div class="ftr-brand">Chrono<span>View</span> · T&amp;M</div>
+    <div class="ftr-meta">Gerado automaticamente · ${timestamp}</div>
+  </div>
+</div>
+</body>
+</html>`;
+
+            // Abre popup e imprime
+            const pw = window.open('','_blank','width=920,height=760');
+            if(!pw){alert('Permita popups para gerar o PDF.');return;}
+            pw.document.write(html);
+            pw.document.close();
+            pw.onload = () => { setTimeout(()=>{pw.focus();pw.print();setTimeout(()=>pw.close(),1000);},700); };
+        }
+
+        // =====================================================================
+        // VÍDEO
+        // =====================================================================
+        function getFileName(url){if(!url)return"AnaliseSemVideo";const p=url.split(/[\\/]/);let n=p.pop();const qi=n.indexOf('?');if(qi!==-1)n=n.substring(0,qi);const di=n.lastIndexOf('.');if(di>0)n=n.substring(0,di);return n.replace(/%20/g,' ').trim()||"AnaliseSemVideo";}
+
+        function loadFileFromObject(file){
+            if(!file)return;
+            videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando arquivo...</span>`;
+            videoElement.style.display='none';videoPlaceholder.style.display='flex';
+            resetTimer();
+            setTimeout(()=>{try{videoElement.src=URL.createObjectURL(file);videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent=file.name;videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(file.name);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Arquivo corrompido ou inacessível.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO na leitura.</span>`;}},50);
+        }
+
+        function loadVideoFromUrl(){
+            const url=videoUrlInput.value.trim();if(!url)return;
+            videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando streaming...</span>`;
+            videoElement.style.display='none';videoPlaceholder.style.display='flex';
+            resetTimer();
+            setTimeout(()=>{try{videoElement.src=url;videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent='Streaming carregado.';videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(url);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Verifique a URL ou permissões.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO no streaming.</span>`;}},50);
+        }
+
+        function removeVideo(){
+            if(videoElement.src){videoElement.pause();videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoStatus.textContent='Arraste um vídeo, use URL ou selecione arquivo.';videoInput.value='';resetTimer();}
+        }
+
+        // =====================================================================
+        // LISTENERS
+        // =====================================================================
+        btnLoadUrl.addEventListener('click',loadVideoFromUrl);
+        videoUrlInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loadVideoFromUrl();}});
+        videoInput.addEventListener('change',e=>loadFileFromObject(e.target.files[0]));
+        document.getElementById('btn-remove-video').addEventListener('click',removeVideo);
+
+        // Drag & Drop
+        ['dragenter','dragover','dragleave','drop'].forEach(ev=>videoArea.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();},false));
+        videoArea.addEventListener('dragenter',()=>videoArea.classList.add('drag-over'));
+        videoArea.addEventListener('dragover', ()=>videoArea.classList.add('drag-over'));
+        videoArea.addEventListener('dragleave',()=>videoArea.classList.remove('drag-over'));
+        videoArea.addEventListener('drop',e=>{videoArea.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('video/'))loadFileFromObject(f);else videoStatus.innerHTML=`<span style="color:var(--nva-color)">Apenas arquivos de vídeo.</span>`;});
+
+        videoElement.addEventListener('play',       ()=>{syncPause(false);updateDisplay();});
+        videoElement.addEventListener('pause',      ()=>{syncPause(true); updateDisplay();});
+        videoElement.addEventListener('ratechange', e =>syncSpeed(e.target.playbackRate));
+
+        document.getElementById('btn-nva').addEventListener('click',()=>setActivity('NVA'));
+        document.getElementById('btn-sva').addEventListener('click',()=>setActivity('SVA'));
+        document.getElementById('btn-vaa').addEventListener('click',()=>setActivity('VAA'));
+        document.getElementById('btn-report').addEventListener('click',generateReport);
+        document.getElementById('btn-reset').addEventListener('click',saveAndResetTimer);
+        btnPause.addEventListener('click',()=>togglePause());
+        btn2x.addEventListener('click',toggleSpeed);
+        document.getElementById('btn-classify').addEventListener('click',()=>classifyActivity(document.getElementById('query-input').value));
+
+        // Mini display teleport
+        miniDisplay.addEventListener('click',e=>{
+            if(e.target.closest('button')){isTeleporting=false;miniDisplay.classList.remove('teleporting');return;}
+            isTeleporting=!isTeleporting;miniDisplay.classList.toggle('teleporting',isTeleporting);e.stopPropagation();
+        });
+        document.addEventListener('click',e=>{
+            if(document.getElementById('app-container').contains(e.target)||messageBox.contains(e.target))return;
+            if(isTeleporting){moveMiniDisplay(e.clientX-(miniDisplay.offsetLeft+miniDisplay.offsetWidth/2),e.clientY-(miniDisplay.offsetTop+miniDisplay.offsetHeight/2));isTeleporting=false;miniDisplay.classList.remove('teleporting');}
+        });
+
+        // ── FULLSCREEN — garante mini HUD sempre visível ──
+        function handleFullscreenChange(){
+            const isFs=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement);
+            if(isFs){
+                // Garante que o mini display não esteja oculto
+                if(isMiniDisplayHidden){isMiniDisplayHidden=false;miniDisplay.classList.remove('hidden-fully');}
+                // Ancora a posição como fixed com coordenadas absolutas (necessário para sobrepor tela cheia)
+                const rect=miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left=`${rect.left}px`;
+                miniDisplay.style.top=`${rect.top}px`;
+                miniDisplay.style.right='auto';
+                miniDisplay.style.bottom='auto';
+                miniDisplay.classList.add('fullscreen-active');
+            } else {
+                miniDisplay.classList.remove('fullscreen-active');
+            }
+            updateDisplay();
+        }
+        ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','msfullscreenchange'].forEach(ev=>document.addEventListener(ev,handleFullscreenChange));
+
+        // Keyboard
+        document.addEventListener('keydown',e=>{
+            const inInput=e.target.tagName==='INPUT';
+            if(e.key==='Enter'&&inInput)return;
+            if(e.ctrlKey&&e.key.toLowerCase()==='z'&&!messageBox.classList.contains('flex')){e.preventDefault();undoLastEvent();return;}
+            if(isTeleporting&&['ArrowUp','ArrowDown','ArrowLeft','ArrowRight'].includes(e.key)){
+                e.preventDefault();const step=20;
+                if(e.key==='ArrowUp')moveMiniDisplay(0,-step);
+                if(e.key==='ArrowDown')moveMiniDisplay(0,step);
+                if(e.key==='ArrowLeft')moveMiniDisplay(-step,0);
+                if(e.key==='ArrowRight')moveMiniDisplay(step,0);
+                return;
+            }
+            if(!inInput){if([' ','Enter','Shift','1','2','3','x','+','-'].includes(e.key))e.preventDefault();if(!isTeleporting&&(e.key==='ArrowLeft'||e.key==='ArrowRight'))e.preventDefault();}
+            if(inInput)return;
+            switch(e.key.toLowerCase()){
+                case '1':setActivity('NVA');break;
+                case '2':setActivity('SVA');break;
+                case '3':setActivity('VAA');break;
+                case ' ':if(!messageBox.classList.contains('flex'))togglePause();break;
+                case 'x':if(!messageBox.classList.contains('flex'))toggleSpeed();break;
+                case 'enter':if(messageBox.classList.contains('flex'))closeReport();else generateReport();break;
+                case 'shift':saveAndResetTimer();break;
+                case '+':case '=':if(!messageBox.classList.contains('flex'))changeMiniDisplaySize(1);break;
+                case '-':if(!messageBox.classList.contains('flex'))changeMiniDisplaySize(-1);break;
+                case 'escape':if(isTeleporting){isTeleporting=false;miniDisplay.classList.remove('teleporting');}else if(messageBox.classList.contains('flex'))closeReport();break;
+                case 'f':{const isFs=document.fullscreenElement||document.webkitFullscreenElement;if(isFs){if(isMiniDisplayHidden)toggleMiniDisplayHidden();}else toggleMiniDisplayHidden();break;}
+            }
+        });
+
+        // =====================================================================
+        // INICIALIZAÇÃO
+        // =====================================================================
+        window.onload=function(){
+            // Tema salvo
+            const savedTheme=localStorage.getItem('cvTheme')||'dark';
+            applyTheme(savedTheme);
+
+            // Modo celular salvo
+            if(localStorage.getItem('cvMobileMode')==='1'){isMobileMode=true;document.body.classList.add('mobile-mode');document.getElementById('mobile-btn-text').textContent='Desktop';}
+
+            reFetchModalElements();
+            originalReportHTML=reportModalContent.innerHTML;
+
+            if(!loadState()){
+                attachReportModalListeners();
+                attachClassificationListeners();
+                miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);
+                const rect=miniDisplay.getBoundingClientRect();
+                miniDisplay.style.left=`${rect.left}px`;miniDisplay.style.top=`${rect.top}px`;
+                miniDisplay.style.right='auto';miniDisplay.style.bottom='auto';
+            } else {
+                attachReportModalListeners();
+                attachClassificationListeners();
+                miniDisplay.classList.add(MINI_DISPLAY_SIZES[currentSizeIndex]);
+            }
+            document.querySelectorAll('.indicator-button').forEach(b=>{b.style.opacity='0.5';});
+            updateDisplay();
+        };
+
+        updateDisplay();
+        stopTimer();
+    </script>
+</body>
+</html>
