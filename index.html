@@ -47,7 +47,7 @@
             --vaa-bg:           rgba(34,197,94,0.08);
             --shadow-modal:     0 25px 60px rgba(0,0,0,0.7);
         }
-
+ 
         /* ═══════════════════════════════════════════════
            TEMA CLARO
         ═══════════════════════════════════════════════ */
@@ -74,9 +74,9 @@
             --vaa-bg:           rgba(22,163,74,0.07);
             --shadow-modal:     0 25px 60px rgba(0,0,0,0.18);
         }
-
+ 
         * { box-sizing: border-box; }
-
+ 
         body {
             font-family: 'DM Sans', sans-serif;
             background-color: var(--bg-base);
@@ -87,7 +87,7 @@
             padding: 0; margin: 0;
             transition: background-color 0.25s, color 0.25s;
         }
-
+ 
         /* ── HEADER ── */
         #site-header {
             background: var(--bg-panel);
@@ -115,7 +115,7 @@
             padding: 2px 7px; border-radius: 3px; text-transform: uppercase;
         }
         .header-right { display: flex; align-items: center; gap: 0.6rem; }
-
+ 
         /* ── LAYOUT ── */
         #main-layout-container {
             width: 100%; max-width: 1440px; margin: 0 auto;
@@ -133,7 +133,7 @@
             display: flex; flex-direction: column; gap: 1rem;
             border-right: 1px solid var(--border);
         }
-
+ 
         /* ── MOBILE MODE ── */
         body.mobile-mode #video-column { display: none; }
         body.mobile-mode #main-layout-container { justify-content: center; }
@@ -143,7 +143,7 @@
             padding: 1rem;
         }
         body.mobile-mode #mobile-banner { display: flex; }
-
+ 
         #mobile-banner {
             display: none;
             background: rgba(245,158,11,0.12);
@@ -154,7 +154,7 @@
             font-family: 'Rajdhani', sans-serif;
             letter-spacing: 0.06em; text-transform: uppercase;
         }
-
+ 
         /* ── PANELS ── */
         .panel {
             background: var(--bg-panel);
@@ -175,7 +175,7 @@
         }
         .panel-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--accent-amber); }
         .panel-body { padding: 1rem; }
-
+ 
         /* ── VIDEO AREA ── */
         #analysis-video { width: 100%; display: none; max-height: 65vh; background: #000; }
         #video-placeholder {
@@ -192,7 +192,7 @@
             background: var(--bg-elevated);
             display: flex; gap: 0.45rem; align-items: center;
         }
-
+ 
         /* ── INPUTS ── */
         .cv-input {
             background: var(--bg-input); border: 1px solid var(--border);
@@ -203,7 +203,7 @@
         }
         .cv-input:focus { border-color: var(--accent-amber); box-shadow: 0 0 0 3px rgba(245,158,11,0.1); }
         .cv-input::placeholder { color: var(--text-muted); }
-
+ 
         /* ── BUTTONS ── */
         .cv-btn {
             font-family: 'Rajdhani', sans-serif;
@@ -226,7 +226,7 @@
         .btn-danger:hover { background: rgba(239,68,68,0.15); }
         .btn-teal { background: rgba(20,184,166,0.12); color: #2dd4bf; border: 1px solid rgba(20,184,166,0.22); }
         .btn-teal:hover { background: rgba(20,184,166,0.22); }
-
+ 
         /* ── CHRONOMETER ── */
         #chronometer-display {
             font-family: 'Space Mono', monospace;
@@ -240,13 +240,13 @@
         #chronometer-display.state-nva { color: var(--nva-color); border-color: rgba(239,68,68,0.4); box-shadow: 0 0 20px rgba(239,68,68,0.1) inset; }
         #chronometer-display.state-sva { color: var(--sva-color); border-color: rgba(245,158,11,0.4); box-shadow: 0 0 20px rgba(245,158,11,0.1) inset; }
         #chronometer-display.state-vaa { color: var(--vaa-color); border-color: rgba(34,197,94,0.4); box-shadow: 0 0 20px rgba(34,197,94,0.1) inset; }
-
+ 
         #activity-status {
             font-size: 0.75rem; color: var(--text-muted);
             text-align: center; font-family: 'Space Mono', monospace;
             letter-spacing: 0.04em; min-height: 1.2rem;
         }
-
+ 
         /* ── ACTIVITY BUTTONS ── */
         .indicator-button {
             position: relative;
@@ -263,14 +263,14 @@
         .indicator-button:hover { opacity: 0.8; transform: translateY(-1px); }
         .indicator-button.active { opacity: 1; transform: translateY(-2px); }
         .indicator-button:active { transform: scale(0.97) translateY(0); }
-
+ 
         #btn-nva { background: var(--nva-bg); border-color: rgba(239,68,68,0.3); color: var(--nva-color); }
         #btn-nva.active { background: rgba(239,68,68,0.18); border-color: var(--nva-color); box-shadow: 0 4px 20px rgba(239,68,68,0.25); }
         #btn-sva { background: var(--sva-bg); border-color: rgba(245,158,11,0.3); color: var(--sva-color); }
         #btn-sva.active { background: rgba(245,158,11,0.18); border-color: var(--sva-color); box-shadow: 0 4px 20px rgba(245,158,11,0.25); }
         #btn-vaa { background: var(--vaa-bg); border-color: rgba(34,197,94,0.3); color: var(--vaa-color); }
         #btn-vaa.active { background: rgba(34,197,94,0.18); border-color: var(--vaa-color); box-shadow: 0 4px 20px rgba(34,197,94,0.25); }
-
+ 
         /* ── CONTROL BUTTONS ── */
         .ctrl-btn {
             font-family: 'Rajdhani', sans-serif;
@@ -287,7 +287,7 @@
         .ctrl-btn.active-green { background: rgba(34,197,94,0.12); border-color: rgba(34,197,94,0.4); color: #4ade80; }
         .ctrl-btn.active-amber { background: rgba(245,158,11,0.12); border-color: rgba(245,158,11,0.4); color: var(--accent-amber); }
         .ctrl-btn.active-purple { background: rgba(168,85,247,0.12); border-color: rgba(168,85,247,0.4); color: #c084fc; }
-
+ 
         /* ── TIME CARDS ── */
         .time-card { border-radius: 6px; padding: 0.5rem; display: flex; flex-direction: column; gap: 0.2rem; border: 1px solid; }
         .time-card.nva-card { background: var(--nva-bg); border-color: rgba(239,68,68,0.2); }
@@ -298,14 +298,14 @@
         .nva-card .time-card-label,.nva-card .time-card-value { color: var(--nva-color); }
         .sva-card .time-card-label,.sva-card .time-card-value { color: var(--sva-color); }
         .vaa-card .time-card-label,.vaa-card .time-card-value { color: var(--vaa-color); }
-
+ 
         /* ── STATE INDICATOR ── */
         #state-indicator { height: 3px; width: 100%; background: var(--border); transition: background 0.3s; }
         #state-indicator.state-nva { background: linear-gradient(90deg,var(--nva-color),transparent); }
         #state-indicator.state-sva { background: linear-gradient(90deg,var(--sva-color),transparent); }
         #state-indicator.state-vaa { background: linear-gradient(90deg,var(--vaa-color),transparent); }
         #state-indicator.state-paused { background: linear-gradient(90deg,#3b82f6,transparent); }
-
+ 
         /* ── MINI DISPLAY ── */
         #mini-display {
             position: fixed; bottom: 20px; right: 20px;
@@ -321,19 +321,19 @@
         }
         #mini-display.teleporting { box-shadow: 0 0 0 3px var(--accent-amber), 0 0 20px rgba(245,158,11,0.4); animation: pulse 1s infinite; }
         @keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.02)} }
-
+ 
         /* ─── CORREÇÃO TELA CHEIA: z-index máximo absoluto ─── */
         #mini-display.fullscreen-active {
             z-index: 2147483647 !important;
             position: fixed !important;
         }
-
+ 
         #mini-display.minimized { width: 44px; height: 44px; padding: 0; overflow: hidden; border-radius: 6px; font-size: 1rem; line-height: 44px; min-width: unset; }
         #mini-display.hidden-fully { display: none !important; }
         #mini-display.size-small  { min-width: 130px; }
         #mini-display.size-medium { min-width: 170px; }
         #mini-display.size-large  { min-width: 220px; }
-
+ 
         /* ── MODAL ── */
         #message-box { background: rgba(0,0,0,0.75); backdrop-filter: blur(4px); }
         #report-modal-content {
@@ -343,7 +343,7 @@
             transition: background 0.25s;
         }
         .modal-title { font-family: 'Rajdhani', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-primary); }
-
+ 
         /* ── TABS ── */
         .tab-btn {
             font-family: 'Rajdhani', sans-serif; font-size: 0.82rem; font-weight: 600;
@@ -354,7 +354,7 @@
         }
         .tab-btn:hover { color: var(--text-secondary); }
         .tab-btn.active-tab { border-bottom-color: var(--accent-amber); color: var(--accent-amber); }
-
+ 
         /* ── TABLE ── */
         .cv-table { width: 100%; border-collapse: collapse; }
         .cv-table thead tr { background: var(--bg-elevated); }
@@ -363,11 +363,11 @@
         .cv-table tr:last-child td { border-bottom: none; }
         .cv-table tbody tr:hover { background: var(--bg-elevated); }
         .cv-table .total-row { background: var(--bg-elevated); font-weight: 700; }
-
+ 
         /* ── EXPORT BOX ── */
         .export-box { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 8px; padding: 1rem; }
         .export-label { font-family: 'Rajdhani', sans-serif; font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.35rem; }
-
+ 
         /* ── PIE CHART ── */
         #pie-container {
             display: flex; align-items: center; justify-content: center;
@@ -377,30 +377,30 @@
         #pie-legend { display: flex; flex-direction: column; gap: 0.5rem; }
         .pie-legend-item { display: flex; align-items: center; gap: 0.5rem; font-family: 'Space Mono', monospace; font-size: 0.78rem; }
         .pie-legend-dot { width: 12px; height: 12px; border-radius: 3px; flex-shrink: 0; }
-
+ 
         /* ── LOG ── */
         .log-list { max-height: 280px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--bg-input); }
         .log-list::-webkit-scrollbar { width: 4px; }
         .log-list::-webkit-scrollbar-track { background: transparent; }
         .log-list::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 2px; }
-
+ 
         /* ── DRAG OVER ── */
         .drag-over #video-placeholder { border-color: var(--accent-amber) !important; box-shadow: 0 0 0 3px rgba(245,158,11,0.2); }
-
+ 
         /* ── CLASSIFICATION RESULT ── */
         #classification-result { background: var(--bg-input); border: 1px solid var(--border); border-radius: 6px; padding: 0.7rem; min-height: 52px; font-size: 0.83rem; color: var(--text-muted); }
-
+ 
         /* ── SCROLLBAR ── */
         ::-webkit-scrollbar { width: 6px; height: 6px; }
         ::-webkit-scrollbar-track { background: var(--bg-base); }
         ::-webkit-scrollbar-thumb { background: var(--border-bright); border-radius: 3px; }
-
+ 
         /* ── KEYBOARD HINTS ── */
         .kbd { display: inline-block; background: var(--bg-input); border: 1px solid var(--border-bright); border-radius: 3px; padding: 0 4px; font-family: 'Space Mono', monospace; font-size: 0.62rem; color: var(--text-muted); line-height: 1.6; }
-
+ 
         /* ── HISTORY CARD ── */
         .history-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: 6px; padding: 0.8rem 1rem; display: flex; justify-content: space-between; align-items: center; border-left: 3px solid var(--accent-amber); }
-
+ 
         /* ── THEME TOGGLE ── */
         .theme-toggle-btn {
             display: flex; align-items: center; gap: 0.4rem;
@@ -411,7 +411,7 @@
             border: 1px solid var(--border); cursor: pointer; transition: all 0.15s;
         }
         .theme-toggle-btn:hover { border-color: var(--border-bright); color: var(--text-primary); }
-
+ 
         /* ── PRINT ── */
         @media print {
             body { background: white !important; color: black !important; }
@@ -427,10 +427,10 @@
     </style>
 </head>
 <body>
-
+ 
     <!-- MINI DISPLAY (floating) -->
     <div id="mini-display"></div>
-
+ 
     <!-- HEADER -->
     <header id="site-header">
         <div class="flex items-center gap-3">
@@ -439,7 +439,7 @@
         </div>
         <div class="header-right">
             <span id="activity-status" style="font-family:'Space Mono',monospace;font-size:0.72rem;color:var(--text-muted)">PRONTO</span>
-
+ 
             <!-- NOVO: Botão Modo Celular -->
             <button id="btn-mobile-mode" class="theme-toggle-btn" title="Alternar modo celular" onclick="toggleMobileMode()">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px">
@@ -447,7 +447,7 @@
                 </svg>
                 <span id="mobile-btn-text">Celular</span>
             </button>
-
+ 
             <!-- NOVO: Botão Tema -->
             <button id="btn-theme" class="theme-toggle-btn" title="Alternar tema claro/escuro" onclick="toggleTheme()">
                 <svg id="theme-icon-dark" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px">
@@ -458,13 +458,13 @@
                 </svg>
                 <span id="theme-btn-text">Claro</span>
             </button>
-
+ 
             <button id="btn-toggle-mini-display" onclick="toggleMiniDisplayHidden()" class="theme-toggle-btn">
                 HUD (F)
             </button>
         </div>
     </header>
-
+ 
     <!-- MOBILE BANNER -->
     <div id="mobile-banner">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:14px;height:14px">
@@ -472,14 +472,14 @@
         </svg>
         MODO CELULAR ATIVO — Apenas cronômetro, sem vídeo
     </div>
-
+ 
     <!-- STATE INDICATOR -->
     <div id="state-indicator"></div>
-
+ 
     <!-- MAIN CONTENT -->
     <div style="display:flex;flex:1;overflow:hidden">
         <div id="main-layout-container">
-
+ 
             <!-- ── VIDEO COLUMN ── -->
             <div id="video-column">
                 <div id="video-area" class="panel">
@@ -508,7 +508,7 @@
                         </button>
                     </div>
                 </div>
-
+ 
                 <div class="panel">
                     <div class="panel-header">
                         <div class="panel-dot" style="background:#2dd4bf"></div>
@@ -526,13 +526,13 @@
                     </div>
                 </div>
             </div>
-
+ 
             <!-- ── CHRONOMETER COLUMN ── -->
             <div id="app-container">
                 <div>
                     <div id="chronometer-display">00:00:00.0</div>
                 </div>
-
+ 
                 <div>
                     <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Classificação</div>
                     <div class="grid grid-cols-3 gap-2">
@@ -541,7 +541,7 @@
                         <button id="btn-vaa" data-activity="VAA" class="indicator-button">VAA<span class="key-hint">[3]</span></button>
                     </div>
                 </div>
-
+ 
                 <div>
                     <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Controles</div>
                     <div class="grid grid-cols-2 gap-2">
@@ -563,7 +563,7 @@
                         </button>
                     </div>
                 </div>
-
+ 
                 <div>
                     <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Tempos Acumulados</div>
                     <div class="grid grid-cols-3 gap-2">
@@ -572,7 +572,7 @@
                         <div class="time-card vaa-card"><span class="time-card-label">VAA</span><span id="vaa-time-display" class="time-card-value">00:00:00</span></div>
                     </div>
                 </div>
-
+ 
                 <div style="background:var(--bg-elevated);border:1px solid var(--border);border-radius:6px;padding:0.65rem">
                     <div style="font-family:'Rajdhani',sans-serif;font-size:0.68rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.4rem">Atalhos</div>
                     <div style="display:grid;grid-template-columns:1fr 1fr;gap:0.3rem;font-size:0.7rem;color:var(--text-muted)">
@@ -587,35 +587,35 @@
                     </div>
                 </div>
             </div>
-
+ 
         </div>
     </div>
-
+ 
     <div id="print-area" class="hidden"></div>
-
+ 
     <!-- ── MODAL DE RELATÓRIO ── -->
     <div id="message-box" class="fixed inset-0 hidden items-center justify-center p-4 z-50">
         <div id="report-modal-content" class="w-full max-w-4xl" style="max-height:90vh;overflow-y:auto;padding:1.75rem">
-
+ 
             <div class="flex items-center justify-between mb-5">
                 <h2 class="modal-title">Relatório de Cronoanálise</h2>
                 <button id="btn-close-report-top" style="color:var(--text-muted);background:none;border:none;cursor:pointer;padding:4px">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:20px;height:20px"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
-
+ 
             <div id="tab-nav" class="flex no-print" style="border-bottom:1px solid var(--border);margin-bottom:1.25rem">
                 <button id="tab-report"  data-tab="report"  class="tab-btn active-tab">Relatório</button>
                 <button id="tab-history" data-tab="history" class="tab-btn">Histórico</button>
                 <button id="tab-log"     data-tab="log"     class="tab-btn">Log</button>
             </div>
-
+ 
             <!-- ── REPORT TAB ── -->
             <div id="report-tab-content">
-
+ 
                 <!-- Gráfico de pizza + tabela lado a lado -->
                 <div style="display:flex;gap:1.5rem;align-items:flex-start;flex-wrap:wrap;margin-bottom:1.25rem">
-
+ 
                     <!-- PIE CHART (NOVO) -->
                     <div style="flex-shrink:0">
                         <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem">Distribuição</div>
@@ -637,7 +637,7 @@
                             </div>
                         </div>
                     </div>
-
+ 
                     <!-- TABELA -->
                     <div style="flex:1;min-width:260px">
                         <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.6rem">Resultados Detalhados</div>
@@ -672,11 +672,11 @@
                         </div>
                     </div>
                 </div>
-
+ 
                 <!-- EXPORTAÇÃO -->
                 <div id="excel-copy-area" class="export-box no-print mb-5">
                     <div style="font-family:'Rajdhani',sans-serif;font-size:0.85rem;font-weight:600;letter-spacing:0.06em;color:var(--text-secondary);margin-bottom:0.65rem;text-transform:uppercase">Exportar para Planilha</div>
-
+ 
                     <div class="export-label">
                         Porcentagens &nbsp;
                         <span style="color:var(--nva-color)">NVA</span> ·
@@ -687,7 +687,7 @@
                         <input type="text" id="excel-data" readonly class="cv-input" style="font-family:'Space Mono',monospace;flex:1" value="0% 0% 0%">
                         <button id="btn-copy-excel" class="cv-btn btn-amber">Copiar</button>
                     </div>
-
+ 
                     <div class="export-label">
                         Tempos Brutos &nbsp;
                         <span style="color:var(--nva-color)">NVA</span> ·
@@ -698,14 +698,14 @@
                         <input type="text" id="excel-times" readonly class="cv-input" style="font-family:'Space Mono',monospace;flex:1" value="00:00:00 00:00:00 00:00:00">
                         <button id="btn-copy-times" class="cv-btn btn-ghost">Copiar</button>
                     </div>
-
+ 
                     <div id="excel-print-data" style="display:none;margin-top:8px">
                         <p style="font-size:0.82rem;color:var(--text-muted)">Porcentagens NVA | SVA | VAA:</p>
                         <span class="excel-value" style="font-family:'Space Mono',monospace;display:block;margin-top:3px;font-weight:700"></span>
                     </div>
                 </div>
             </div>
-
+ 
             <!-- ── HISTORY TAB ── -->
             <div id="history-tab-content" class="hidden">
                 <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.65rem">Medições Anteriores</div>
@@ -713,7 +713,7 @@
                     <p style="color:var(--text-muted);text-align:center;padding:2rem;background:var(--bg-elevated);border-radius:6px;font-size:0.83rem">Nenhuma medição salva ainda.</p>
                 </div>
             </div>
-
+ 
             <!-- ── LOG TAB ── -->
             <div id="log-tab-content" class="hidden">
                 <div style="font-family:'Rajdhani',sans-serif;font-size:0.72rem;letter-spacing:0.12em;text-transform:uppercase;color:var(--text-muted);margin-bottom:0.65rem">Log de Eventos</div>
@@ -722,7 +722,7 @@
                     <p style="color:var(--text-muted);text-align:center;font-size:0.78rem">Nenhum evento registrado.</p>
                 </div>
             </div>
-
+ 
             <div class="flex justify-end gap-3 mt-5 no-print">
                 <button id="btn-print-report" class="cv-btn btn-ghost">
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.829c-.24.03-.48.062-.72.096m.72-.096a42.415 42.415 0 0110.56 0m-10.56 0L6.34 18m10.94-4.171c.24.03.48.062.72.096m-.72-.096L17.66 18m0 0l.229 2.523a1.125 1.125 0 01-1.12 1.227H7.231c-.662 0-1.18-.568-1.12-1.227L6.34 18m11.318 0h1.091A2.25 2.25 0 0021 15.75V9.456c0-1.081-.768-2.015-1.837-2.175a48.055 48.055 0 00-1.913-.247M6.34 18H5.25A2.25 2.25 0 013 15.75V9.456c0-1.081.768-2.015 1.837-2.175a48.041 48.041 0 011.913-.247m10.5 0a48.536 48.536 0 00-10.5 0m10.5 0V3.375c0-.621-.504-1.125-1.125-1.125h-8.25c-.621 0-1.125.504-1.125 1.125v3.659M18 10.5h.008v.008H18V10.5zm-3 0h.008v.008H15V10.5z"/></svg>
@@ -730,10 +730,10 @@
                 </button>
                 <button id="btn-close-report" class="cv-btn btn-amber">Fechar</button>
             </div>
-
+ 
         </div>
     </div>
-
+ 
     <!-- ══════════════════════════════════════════════════════════════
          JAVASCRIPT
     ══════════════════════════════════════════════════════════════ -->
@@ -755,7 +755,7 @@
         let isTeleporting = false;
         let isMobileMode = false;
         let currentTheme = 'dark'; // 'dark' | 'light'
-
+ 
         // =====================================================================
         // DOM REFS
         // =====================================================================
@@ -777,7 +777,7 @@
         const videoArea          = document.getElementById('video-area');
         const videoPlaceholder   = document.getElementById('video-placeholder');
         const stateIndicator     = document.getElementById('state-indicator');
-
+ 
         let excelPrintDataElement = null;
         let excelDataInput  = document.getElementById('excel-data');
         let excelTimesInput = document.getElementById('excel-times');
@@ -789,10 +789,10 @@
         let logTabContent     = document.getElementById('log-tab-content');
         let historyList       = document.getElementById('history-list');
         let currentLogList    = document.getElementById('current-log-list');
-
+ 
         let originalReportHTML = reportModalContent.innerHTML;
         let activeTab = 'report';
-
+ 
         // =====================================================================
         // TEMA
         // =====================================================================
@@ -801,7 +801,7 @@
             applyTheme(currentTheme);
             localStorage.setItem('cvTheme', currentTheme);
         }
-
+ 
         function applyTheme(theme) {
             currentTheme = theme;
             if (theme === 'light') {
@@ -823,7 +823,7 @@
                 if (nP+sP+vP > 0) drawPieChart(nP, sP, vP);
             }
         }
-
+ 
         // =====================================================================
         // MODO CELULAR
         // =====================================================================
@@ -833,27 +833,27 @@
             document.getElementById('mobile-btn-text').textContent = isMobileMode ? 'Desktop' : 'Celular';
             localStorage.setItem('cvMobileMode', isMobileMode ? '1' : '0');
         }
-
+ 
         // =====================================================================
         // PIE CHART
         // =====================================================================
         function getCSSVar(name) {
             return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
         }
-
+ 
         function drawPieChart(nvaP, svaP, vaaP) {
             const canvas = document.getElementById('pie-canvas');
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             const W = canvas.width, H = canvas.height;
             const cx = W/2, cy = H/2, r = Math.min(W,H)/2 - 8;
-
+ 
             ctx.clearRect(0, 0, W, H);
-
+ 
             const nvaC = getCSSVar('--nva-color') || '#ef4444';
             const svaC = getCSSVar('--sva-color') || '#f59e0b';
             const vaaC = getCSSVar('--vaa-color') || '#22c55e';
-
+ 
             const total = nvaP + svaP + vaaP;
             if (total === 0) {
                 // Empty state circle
@@ -864,15 +864,15 @@
                 ctx.lineWidth = 2; ctx.stroke();
                 return;
             }
-
+ 
             const segments = [
                 { value: nvaP, color: nvaC },
                 { value: svaP, color: svaC },
                 { value: vaaP, color: vaaC },
             ].filter(s => s.value > 0);
-
+ 
             let startAngle = -Math.PI / 2;
-
+ 
             segments.forEach(seg => {
                 const sliceAngle = (seg.value / total) * 2 * Math.PI;
                 ctx.beginPath();
@@ -883,12 +883,12 @@
                 ctx.fill();
                 startAngle += sliceAngle;
             });
-
+ 
             // Center hole (donut)
             ctx.beginPath(); ctx.arc(cx, cy, r * 0.42, 0, 2*Math.PI);
             ctx.fillStyle = getCSSVar('--bg-panel') || '#13161e';
             ctx.fill();
-
+ 
             // Gap lines
             startAngle = -Math.PI / 2;
             segments.forEach(seg => {
@@ -903,7 +903,7 @@
                 ctx.stroke();
                 startAngle += sliceAngle;
             });
-
+ 
             // Percentage labels on slices
             startAngle = -Math.PI / 2;
             ctx.font = `bold 11px 'Space Mono', monospace`;
@@ -921,7 +921,7 @@
                 startAngle += sliceAngle;
             });
         }
-
+ 
         // =====================================================================
         // CLASSIFICAÇÃO
         // =====================================================================
@@ -939,11 +939,11 @@
                 details: ['desembalar','abrir','remover excesso','desmontar','mascarar','buscar','levar','procurar','curvar','levantar','sentar','ficar','esperar','recontar','retrabalho','alinhar','espera','movimentar','andar','icamento','ajustes','limpeza','registro','ler observação']
             }
         };
-
+ 
         function normalizeText(text) {
             return text.toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g,"").replace(/[.,\/#!$%\^&\*;:{}=\-_`~()]/g,"").trim();
         }
-
+ 
         function classifyActivity(query) {
             const nq = normalizeText(query);
             const resultDiv = document.getElementById('classification-result');
@@ -966,7 +966,7 @@
             resultDiv.innerHTML=`<div style="padding:0.55rem 0.75rem;border:1px solid ${s.b};background:${s.bg};border-radius:5px"><div style="font-family:'Rajdhani',sans-serif;font-size:1.05rem;font-weight:700;color:${s.c};letter-spacing:0.06em">${bestCategory}</div><div style="font-size:0.76rem;color:var(--text-secondary);margin-top:2px">${bestMatch}</div></div>`;
             document.getElementById('query-input').blur();
         }
-
+ 
         function attachClassificationListeners() {
             const btn = document.getElementById('btn-classify');
             const inp = document.getElementById('query-input');
@@ -975,7 +975,7 @@
                 inp.addEventListener('keydown', e=>{ if(e.key==='Enter'){e.preventDefault();classifyActivity(inp.value);} });
             }
         }
-
+ 
         // =====================================================================
         // PERSISTÊNCIA
         // =====================================================================
@@ -987,7 +987,7 @@
                 currentVideoFileName
             }));
         }
-
+ 
         function loadState() {
             const j = localStorage.getItem('cronoState');
             if (!j) return false;
@@ -1001,7 +1001,7 @@
             updateDisplay(); renderHistory(); renderLog();
             return true;
         }
-
+ 
         // =====================================================================
         // FORMATAÇÃO
         // =====================================================================
@@ -1021,7 +1021,7 @@
             const tot=Math.floor(ms/3600000)*60+Math.floor((ms%3600000)/60000)+(Math.floor((ms%60000)/1000)>=30?1:0);
             return`${String(Math.floor(tot/60)).padStart(2,'0')}:${String(tot%60).padStart(2,'0')}`;
         }
-
+ 
         // =====================================================================
         // MINI DISPLAY
         // =====================================================================
@@ -1041,7 +1041,7 @@
             ny=Math.max(mg,Math.min(ny,window.innerHeight-miniDisplay.offsetHeight-mg));
             miniDisplay.style.left=`${nx}px`;miniDisplay.style.top=`${ny}px`;
         }
-
+ 
         // =====================================================================
         // UPDATE DISPLAY
         // =====================================================================
@@ -1059,37 +1059,37 @@
             document.getElementById('nva-time-display').textContent=formatTimeSimple(nvaTime);
             document.getElementById('sva-time-display').textContent=formatTimeSimple(svaTime);
             document.getElementById('vaa-time-display').textContent=formatTimeSimple(vaaTime);
-
+ 
             display.classList.remove('state-nva','state-sva','state-vaa');
             if(isRunning&&!isPaused&&currentActivity) display.classList.add(`state-${currentActivity.toLowerCase()}`);
-
+ 
             stateIndicator.classList.remove('state-nva','state-sva','state-vaa','state-paused');
             if(isRunning&&!isPaused){if(currentActivity)stateIndicator.classList.add(`state-${currentActivity.toLowerCase()}`);}
             else if(isPaused&&totalTime>0)stateIndicator.classList.add('state-paused');
-
+ 
             let hs='PRONTO';
             if(isRunning&&!isPaused){const sp=isDoubleSpeed?' 2×':'';hs=currentActivity?`${currentActivity}${sp}`:`ATIVO${sp}`;}
             else if(isPaused&&totalTime>0)hs='PAUSADO';
             statusText.textContent=hs;
-
+ 
             speedText.textContent=isDoubleSpeed?'2×':'1×';
             btn2x.classList.toggle('active-purple',isDoubleSpeed);
-
+ 
             const isP=isPaused;
             const pauseIcon=isP
                 ?`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M5.25 5.653c0-.856.917-1.398 1.667-.986l11.54 6.348a1.125 1.125 0 010 1.971l-11.54 6.347a1.125 1.125 0 01-1.667-.985V5.653z"/></svg>`
                 :`<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 5.25v13.5m-7.5-13.5v13.5"/></svg>`;
             btnPause.innerHTML=`${pauseIcon}<span id="pause-text">${isP?'INICIAR':'PAUSAR'}</span><span class="kbd">SPC</span>`;
             btnPause.className=`ctrl-btn ${isP?'active-green':'active-amber'}`;
-
+ 
             // ── MINI DISPLAY ──
             // Detecta tela cheia de qualquer elemento, incluindo o vídeo
             const isFs = !!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement);
             miniDisplay.classList.toggle('fullscreen-active', isFs);
-
+ 
             if(isMiniDisplayHidden){miniDisplay.classList.add('hidden-fully');return;}
             miniDisplay.classList.remove('hidden-fully');
-
+ 
             const miniCM={NVA:{border:'rgba(239,68,68,0.6)',text:'var(--nva-color)',label:'NVA'},SVA:{border:'rgba(245,158,11,0.6)',text:'var(--sva-color)',label:'SVA'},VAA:{border:'rgba(34,197,94,0.6)',text:'var(--vaa-color)',label:'VAA'}};
             let mLabel=isP?'PAUSADO':'ATIVO';
             let mBorder='var(--border-bright)';
@@ -1097,7 +1097,7 @@
             if(isRunning&&!isP&&currentActivity){const mc=miniCM[currentActivity];mBorder=mc.border;mColor=mc.text;mLabel=mc.label;}
             else if(!isRunning)mLabel='PRONTO';
             miniDisplay.style.borderColor=mBorder;
-
+ 
             const ct=formatMiniDisplayTime(totalTime,currentSizeIndex);
             if(isMiniDisplayMinimized){
                 const sh=currentActivity?currentActivity.charAt(0):(isP?'P':'R');
@@ -1118,7 +1118,7 @@
                     <div style="font-family:'Space Mono',monospace;font-size:1.4rem;font-weight:700;color:${mColor};letter-spacing:0.04em">${ct}</div>`;
             }
         }
-
+ 
         // =====================================================================
         // TIMER
         // =====================================================================
@@ -1135,7 +1135,7 @@
         }
         function syncPause(p){if(p&&!isPaused){isPaused=true;stopTimer();updateDisplay();}else if(!p&&isPaused){isPaused=false;startTimer();updateDisplay();}}
         function syncSpeed(r){const sd=r===2.0;if(sd!==isDoubleSpeed){isDoubleSpeed=sd;updateDisplay();}}
-
+ 
         // =====================================================================
         // AÇÕES
         // =====================================================================
@@ -1148,7 +1148,7 @@
             ab.classList.add('active');ab.style.opacity='1';
             updateDisplay();renderLog();saveState();
         }
-
+ 
         function togglePause(isSync=false){
             if(!isSync&&videoElement.src){if(videoElement.paused)videoElement.play();else videoElement.pause();return;}
             isPaused=!isPaused;
@@ -1157,9 +1157,9 @@
             if(isPaused)currentActivity=null;
             updateDisplay();saveState();
         }
-
+ 
         function toggleSpeed(){isDoubleSpeed=!isDoubleSpeed;if(videoElement.src)videoElement.playbackRate=isDoubleSpeed?2.0:1.0;updateDisplay();saveState();}
-
+ 
         // =====================================================================
         // DESFAZER
         // =====================================================================
@@ -1180,7 +1180,7 @@
             if(wr){isPaused=false;startTimer();}else{isPaused=true;isRunning=false;}
             updateDisplay();renderLog();saveState();
         }
-
+ 
         // =====================================================================
         // RESET
         // =====================================================================
@@ -1196,7 +1196,7 @@
                 activityLog=[];localStorage.removeItem('cronoState');resetTimer();
             } else resetTimer();
         }
-
+ 
         function resetTimer(){
             stopTimer();totalTime=nvaTime=svaTime=vaaTime=0;
             isRunning=false;isPaused=true;isDoubleSpeed=false;currentActivity=null;
@@ -1210,7 +1210,7 @@
             updateDisplay();renderLog();
             reFetchModalElements();attachReportModalListeners();saveState();
         }
-
+ 
         // =====================================================================
         // MODAL
         // =====================================================================
@@ -1227,7 +1227,7 @@
             currentLogList    = document.getElementById('current-log-list');
             excelPrintDataElement = document.querySelector('#excel-print-data .excel-value');
         }
-
+ 
         function renderHistory(){
             if(!historyList){reFetchModalElements();if(!historyList)return;}
             if(measurementsHistory.length===0){historyList.innerHTML=`<p style="color:var(--text-muted);text-align:center;padding:2rem;background:var(--bg-elevated);border-radius:6px;font-size:0.83rem">Nenhuma medição salva ainda.</p>`;return;}
@@ -1257,7 +1257,7 @@
                 if(del)del.addEventListener('click',e=>{measurementsHistory=measurementsHistory.filter(x=>x.id!==parseInt(e.currentTarget.dataset.id));renderHistory();saveState();});
             });
         }
-
+ 
         function renderLog(){
             if(!currentLogList){reFetchModalElements();if(!currentLogList)return;}
             if(activityLog.length===0){currentLogList.innerHTML='<p style="color:var(--text-muted);text-align:center;font-size:0.78rem;padding:1rem">Nenhum evento registrado.</p>';return;}
@@ -1268,35 +1268,35 @@
                     <span style="font-family:'Rajdhani',sans-serif;font-size:0.78rem;font-weight:600;letter-spacing:0.08em;color:${cm[l.activity]||'var(--text-secondary)'}">${l.activity}</span>
                 </div>`).join('');
         }
-
+ 
         // =====================================================================
         // GERAR RELATÓRIO (com gráfico de pizza)
         // =====================================================================
         function generateReport(){
             stopTimer();isPaused=true;updateDisplay();
             reFetchModalElements();
-
+ 
             if(totalTime===0){
                 if(reportTabContent)reportTabContent.innerHTML=`<p style="text-align:center;padding:3rem;color:var(--text-muted);font-size:0.88rem">Nenhum tempo registrado para gerar o relatório.</p>`;
                 switchTab('report');
                 messageBox.classList.remove('hidden');messageBox.classList.add('flex');
                 return;
             }
-
+ 
             if(reportTabContent&&reportTabContent.innerHTML.includes('Nenhum tempo registrado')){
                 reportModalContent.innerHTML=originalReportHTML;
                 attachReportModalListeners();reFetchModalElements();
             }
-
+ 
             const total=totalTime;
             let nP=Math.round((nvaTime/total)*100)||0;
             let sP=Math.round((svaTime/total)*100)||0;
             let vP=100-nP-sP;
             if(total===0){nP=sP=vP=0;}
             else if(vP<0){vP=0;const sm=nP+sP;if(sm>0){nP=Math.round(nP+(100-sm)*(nP/sm));sP=100-nP;}else{nP=sP=0;vP=100;}}
-
+ 
             saveMeasurement(nP,sP,vP,JSON.parse(JSON.stringify(classificationStartPoints)));
-
+ 
             document.getElementById('rep-nva-time').textContent=formatTimeSimple(nvaTime);
             document.getElementById('rep-sva-time').textContent=formatTimeSimple(svaTime);
             document.getElementById('rep-vaa-time').textContent=formatTimeSimple(vaaTime);
@@ -1304,23 +1304,23 @@
             document.getElementById('rep-nva-percent').textContent=`${nP}%`;
             document.getElementById('rep-sva-percent').textContent=`${sP}%`;
             document.getElementById('rep-vaa-percent').textContent=`${vP}%`;
-
+ 
             // Atualiza legenda do gráfico
             document.getElementById('leg-nva').textContent=`${nP}%`;
             document.getElementById('leg-sva').textContent=`${sP}%`;
             document.getElementById('leg-vaa').textContent=`${vP}%`;
-
+ 
             excelDataInput.value=`${nP}% ${sP}% ${vP}%`;
             excelTimesInput.value=`${formatTimeSimple(nvaTime)} ${formatTimeSimple(svaTime)} ${formatTimeSimple(vaaTime)}`;
             if(excelPrintDataElement)excelPrintDataElement.textContent=`${nP}% | ${sP}% | ${vP}%`;
-
+ 
             switchTab('report');
             messageBox.classList.remove('hidden');messageBox.classList.add('flex');
-
+ 
             // Desenha o gráfico depois do modal aparecer
             requestAnimationFrame(()=>drawPieChart(nP,sP,vP));
         }
-
+ 
         function closeReport(){
             messageBox.classList.add('hidden');messageBox.classList.remove('flex');
             if(reportTabContent&&reportTabContent.innerHTML.includes('Nenhum tempo registrado')){
@@ -1328,7 +1328,7 @@
                 attachReportModalListeners();reFetchModalElements();
             }
         }
-
+ 
         function switchTab(tabName){
             activeTab=tabName;
             [reportTab,historyTab,logTab].forEach(tab=>{
@@ -1347,7 +1347,7 @@
                 requestAnimationFrame(()=>drawPieChart(nP,sP,vP));
             }
         }
-
+ 
         function attachReportModalListeners(){
             reFetchModalElements();
             const c1=document.getElementById('btn-close-report');
@@ -1361,7 +1361,7 @@
             document.getElementById('tab-history').addEventListener('click',()=>switchTab('history'));
             document.getElementById('tab-log').addEventListener('click',()=>switchTab('log'));
         }
-
+ 
         async function copyField(id){
             const f=document.getElementById(id);
             const b=id==='excel-data'?document.getElementById('btn-copy-excel'):document.getElementById('btn-copy-times');
@@ -1370,14 +1370,14 @@
             catch{f.select();f.setSelectionRange(0,99999);try{document.execCommand('copy');b.textContent='✓ Copiado';}catch{b.textContent='Erro!';}}
             setTimeout(()=>{b.textContent=orig;},1500);
         }
-
+ 
         function saveMeasurement(nP,sP,vP,pts){
             let fn=currentVideoFileName==="AnaliseSemVideo"?`Medição ${historyCounter}`:currentVideoFileName;
             if(currentVideoFileName!=="AnaliseSemVideo"){let sf=1;while(measurementsHistory.some(m=>m.name===fn)){sf++;fn=`${currentVideoFileName} (${sf})`;}}
             measurementsHistory.push({id:historyCounter++,name:fn,timestamp:new Date().toLocaleString('pt-BR'),totalTime,nvaTime,svaTime,vaaTime,nvaPercent:nP,svaPercent:sP,vaaPercent:vP,classificationPoints:pts,eventLog:JSON.parse(JSON.stringify(activityLog))});
             renderHistory();saveState();
         }
-
+ 
         function printReport() {
             // Coleta dados atuais
             const nP = parseInt(document.getElementById('rep-nva-percent').textContent) || 0;
@@ -1391,7 +1391,7 @@
             const excelTimes = document.getElementById('excel-times').value || '00:00:00 00:00:00 00:00:00';
             const videoName  = currentVideoFileName === 'AnaliseSemVideo' ? 'Análise sem vídeo' : currentVideoFileName;
             const timestamp  = new Date().toLocaleString('pt-BR',{weekday:'long',year:'numeric',month:'long',day:'numeric',hour:'2-digit',minute:'2-digit'});
-
+ 
             // Gera canvas do gráfico como imagem base64 (resolução maior para PDF)
             const oc = document.createElement('canvas');
             oc.width = 320; oc.height = 320;
@@ -1411,7 +1411,7 @@
                 segs.forEach(s=>{const a=(s.v/total)*2*Math.PI;if(s.v>=5){const ma=sa+a/2;octx.fillStyle='#fff';octx.fillText(`${s.v}%`,ocx+or*0.67*Math.cos(ma),ocy+or*0.67*Math.sin(ma));}sa+=a;});
             }
             const chartImg = oc.toDataURL('image/png');
-
+ 
             // Barra horizontal helper
             const bar = (label, color, pct, time) => `
                 <div style="margin-bottom:16px">
@@ -1424,7 +1424,7 @@
                     </div>
                     <div style="text-align:right;margin-top:4px;font-family:'Space Mono',monospace;font-size:11px;color:${color};font-weight:700">${pct}%</div>
                 </div>`;
-
+ 
             // HTML completo do PDF — dark theme fiel ao app
             const html = `<!DOCTYPE html>
 <html lang="pt-BR">
@@ -1490,12 +1490,12 @@ tr:last-child td{border-bottom:none}
       <div class="vts">${timestamp}</div>
     </div>
   </div>
-
+ 
   <div class="total-box">
     <div class="total-lbl">Tempo Total Analisado</div>
     <div class="total-val">${totT}</div>
   </div>
-
+ 
   <div class="slabel">Distribuição &amp; Resultados Detalhados</div>
   <div class="mgrid">
     <div class="ccol">
@@ -1534,14 +1534,14 @@ tr:last-child td{border-bottom:none}
       </table>
     </div>
   </div>
-
+ 
   <div class="slabel" style="margin-top:4px">Distribuição por Barra</div>
   <div class="bars-box">
     ${bar('NVA — Não Agrega Valor','#ef4444',nP,nT)}
     ${bar('SVA — Suporte Agrega Valor','#facc15',sP,sT)}
     ${bar('VAA — Valor Agregado','#22c55e',vP,vT)}
   </div>
-
+ 
   <div class="slabel">Dados para Planilha</div>
   <div class="exp-box">
     <div class="exp-row">
@@ -1555,7 +1555,7 @@ tr:last-child td{border-bottom:none}
       </div>
     </div>
   </div>
-
+ 
   <div class="ftr">
     <div class="ftr-brand">Chrono<span>View</span> · T&amp;M</div>
     <div class="ftr-meta">Gerado automaticamente · ${timestamp}</div>
@@ -1563,7 +1563,7 @@ tr:last-child td{border-bottom:none}
 </div>
 </body>
 </html>`;
-
+ 
             // Abre popup e imprime
             const pw = window.open('','_blank','width=920,height=760');
             if(!pw){alert('Permita popups para gerar o PDF.');return;}
@@ -1571,12 +1571,12 @@ tr:last-child td{border-bottom:none}
             pw.document.close();
             pw.onload = () => { setTimeout(()=>{pw.focus();pw.print();setTimeout(()=>pw.close(),1000);},700); };
         }
-
+ 
         // =====================================================================
         // VÍDEO
         // =====================================================================
         function getFileName(url){if(!url)return"AnaliseSemVideo";const p=url.split(/[\\/]/);let n=p.pop();const qi=n.indexOf('?');if(qi!==-1)n=n.substring(0,qi);const di=n.lastIndexOf('.');if(di>0)n=n.substring(0,di);return n.replace(/%20/g,' ').trim()||"AnaliseSemVideo";}
-
+ 
         function loadFileFromObject(file){
             if(!file)return;
             videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando arquivo...</span>`;
@@ -1584,7 +1584,7 @@ tr:last-child td{border-bottom:none}
             resetTimer();
             setTimeout(()=>{try{videoElement.src=URL.createObjectURL(file);videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent=file.name;videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(file.name);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Arquivo corrompido ou inacessível.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO na leitura.</span>`;}},50);
         }
-
+ 
         function loadVideoFromUrl(){
             const url=videoUrlInput.value.trim();if(!url)return;
             videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando streaming...</span>`;
@@ -1592,11 +1592,11 @@ tr:last-child td{border-bottom:none}
             resetTimer();
             setTimeout(()=>{try{videoElement.src=url;videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent='Streaming carregado.';videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(url);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Verifique a URL ou permissões.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO no streaming.</span>`;}},50);
         }
-
+ 
         function removeVideo(){
             if(videoElement.src){videoElement.pause();videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoStatus.textContent='Arraste um vídeo, use URL ou selecione arquivo.';videoInput.value='';resetTimer();}
         }
-
+ 
         // =====================================================================
         // LISTENERS
         // =====================================================================
@@ -1604,18 +1604,18 @@ tr:last-child td{border-bottom:none}
         videoUrlInput.addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();loadVideoFromUrl();}});
         videoInput.addEventListener('change',e=>loadFileFromObject(e.target.files[0]));
         document.getElementById('btn-remove-video').addEventListener('click',removeVideo);
-
+ 
         // Drag & Drop
         ['dragenter','dragover','dragleave','drop'].forEach(ev=>videoArea.addEventListener(ev,e=>{e.preventDefault();e.stopPropagation();},false));
         videoArea.addEventListener('dragenter',()=>videoArea.classList.add('drag-over'));
         videoArea.addEventListener('dragover', ()=>videoArea.classList.add('drag-over'));
         videoArea.addEventListener('dragleave',()=>videoArea.classList.remove('drag-over'));
         videoArea.addEventListener('drop',e=>{videoArea.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('video/'))loadFileFromObject(f);else videoStatus.innerHTML=`<span style="color:var(--nva-color)">Apenas arquivos de vídeo.</span>`;});
-
+ 
         videoElement.addEventListener('play',       ()=>{syncPause(false);updateDisplay();});
         videoElement.addEventListener('pause',      ()=>{syncPause(true); updateDisplay();});
         videoElement.addEventListener('ratechange', e =>syncSpeed(e.target.playbackRate));
-
+ 
         document.getElementById('btn-nva').addEventListener('click',()=>setActivity('NVA'));
         document.getElementById('btn-sva').addEventListener('click',()=>setActivity('SVA'));
         document.getElementById('btn-vaa').addEventListener('click',()=>setActivity('VAA'));
@@ -1624,7 +1624,7 @@ tr:last-child td{border-bottom:none}
         btnPause.addEventListener('click',()=>togglePause());
         btn2x.addEventListener('click',toggleSpeed);
         document.getElementById('btn-classify').addEventListener('click',()=>classifyActivity(document.getElementById('query-input').value));
-
+ 
         // Mini display teleport
         miniDisplay.addEventListener('click',e=>{
             if(e.target.closest('button')){isTeleporting=false;miniDisplay.classList.remove('teleporting');return;}
@@ -1634,7 +1634,7 @@ tr:last-child td{border-bottom:none}
             if(document.getElementById('app-container').contains(e.target)||messageBox.contains(e.target))return;
             if(isTeleporting){moveMiniDisplay(e.clientX-(miniDisplay.offsetLeft+miniDisplay.offsetWidth/2),e.clientY-(miniDisplay.offsetTop+miniDisplay.offsetHeight/2));isTeleporting=false;miniDisplay.classList.remove('teleporting');}
         });
-
+ 
         // ── FULLSCREEN — garante mini HUD sempre visível ──
         function handleFullscreenChange(){
             const isFs=!!(document.fullscreenElement||document.webkitFullscreenElement||document.mozFullScreenElement||document.msFullscreenElement);
@@ -1654,7 +1654,7 @@ tr:last-child td{border-bottom:none}
             updateDisplay();
         }
         ['fullscreenchange','webkitfullscreenchange','mozfullscreenchange','msfullscreenchange'].forEach(ev=>document.addEventListener(ev,handleFullscreenChange));
-
+ 
         // Keyboard
         document.addEventListener('keydown',e=>{
             const inInput=e.target.tagName==='INPUT';
@@ -1684,7 +1684,7 @@ tr:last-child td{border-bottom:none}
                 case 'f':{const isFs=document.fullscreenElement||document.webkitFullscreenElement;if(isFs){if(isMiniDisplayHidden)toggleMiniDisplayHidden();}else toggleMiniDisplayHidden();break;}
             }
         });
-
+ 
         // =====================================================================
         // INICIALIZAÇÃO
         // =====================================================================
@@ -1692,13 +1692,13 @@ tr:last-child td{border-bottom:none}
             // Tema salvo
             const savedTheme=localStorage.getItem('cvTheme')||'dark';
             applyTheme(savedTheme);
-
+ 
             // Modo celular salvo
             if(localStorage.getItem('cvMobileMode')==='1'){isMobileMode=true;document.body.classList.add('mobile-mode');document.getElementById('mobile-btn-text').textContent='Desktop';}
-
+ 
             reFetchModalElements();
             originalReportHTML=reportModalContent.innerHTML;
-
+ 
             if(!loadState()){
                 attachReportModalListeners();
                 attachClassificationListeners();
@@ -1714,7 +1714,7 @@ tr:last-child td{border-bottom:none}
             document.querySelectorAll('.indicator-button').forEach(b=>{b.style.opacity='0.5';});
             updateDisplay();
         };
-
+ 
         updateDisplay();
         stopTimer();
     </script>
