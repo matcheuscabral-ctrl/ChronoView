@@ -609,7 +609,54 @@ body.muda-layout #video-placeholder{min-height:120px;}
 // ═══════════════════════════════════════════════════
 // MUDA VOICES DATABASE
 // ═══════════════════════════════════════════════════
-const MUDA_VOICES={NVA:{label:'NVA — Não Agrega Valor',color:'#ef4444',bg:'rgba(239,68,68,.08)',sections:[{macro:'Desbalanceamento',voices:['Fator de Descanso']},{macro:'Embalar / Desembalar',voices:['Desembalar / Abrir','Remover o excesso de material','Desprender / Desmontar','Mascarar / Desmascarar']},{macro:'Andar',voices:['Buscar / levar peças e retornar','Buscar / levar ferramentas e retornar']},{macro:'Procurar',voices:['Procurar peças','Procurar ferramentas']},{macro:'Movimentos do corpo',voices:['Curvar-se / Levantar-se','Sentar / Ficar em pé (levantar)','Dobrar os joelhos / Esticar os joelhos (levantar)']},{macro:'Esperar',voices:['Espera devido ao tempo de ciclo']},{macro:'Manuseio',voices:['Pegar / devolver peça','Segurar peça','Posicionar / rotacionar peça','Pegar / Devolver ferramenta','Troca / Setup de ferramenta']},{macro:'Içamento',voices:['Prender / desprender peça do dispositivo de içamento','Movimentar peça com o dispositivo de içamento']},{macro:'Qualidade (desnecessária)',voices:['Inspeções de qualidade NÃO PREVISTAS em processo','Testes de qualidade NÃO PREVISTOS em processo','Preenchimento de papéis']},{macro:'Outros',voices:['Ler / observar para entender o que deve ser feito','Registro de dados','Limpeza']}]},SVA:{label:'SVA — Suporte Agrega Valor',color:'#f59e0b',bg:'rgba(245,158,11,.08)',sections:[{macro:'Picking / Supply (SVA)',voices:['Segurar peça para montagem','Pegar peça para montagem','Posicionar peça para montagem','Unir peças para montagem','Martelar','Posicionar ferramenta para montagem']},{macro:'Qualidade (Necessária)',voices:['Inspeções de qualidade PREVISTAS em processo','Testes de qualidade PREVISTOS em processo','Preenchimento de papéis / Decalques / Etiquetas']}]},VAA:{label:'VAA — Valor Agregado',color:'#22c55e',bg:'rgba(34,197,94,.08)',sections:[{macro:'Transformação',voices:['Dobrar o material','Cortar o material','Furar','Embalar peças (para o cliente final)','Parafusar / Fixar','Encaixar','Soldar','Colar','Inserir','Identificar Produto','Fazer pré-tratamento','Pintar']}]}};
+// VOZES CAUSAIS — definidas em PT, traduzidas por getMudaVoices()
+const MUDA_VOICES_PT={
+  NVA:{label:'NVA — Não Agrega Valor',color:'var(--nva-color)',bg:'var(--nva-bg)',sections:[
+    {macro:'Desbalanceamento',voices:['Fator de Descanso']},
+    {macro:'Embalar / Desembalar',voices:['Desembalar / Abrir','Remover o excesso de material','Desprender / Desmontar','Mascarar / Desmascarar']},
+    {macro:'Andar',voices:['Buscar / levar peças e retornar','Buscar / levar ferramentas e retornar']},
+    {macro:'Procurar',voices:['Procurar peças','Procurar ferramentas']},
+    {macro:'Movimentos do corpo',voices:['Curvar-se / Levantar-se','Sentar / Ficar em pé (levantar)','Dobrar os joelhos / Esticar os joelhos (levantar)']},
+    {macro:'Esperar',voices:['Espera devido ao tempo de ciclo']},
+    {macro:'Manuseio',voices:['Pegar / devolver peça','Segurar peça','Posicionar / rotacionar peça','Pegar / Devolver ferramenta','Troca / Setup de ferramenta']},
+    {macro:'Içamento',voices:['Prender / desprender peça do dispositivo de içamento','Movimentar peça com o dispositivo de içamento']},
+    {macro:'Qualidade (desnecessária)',voices:['Inspeções de qualidade NÃO PREVISTAS em processo','Testes de qualidade NÃO PREVISTOS em processo','Preenchimento de papéis']},
+    {macro:'Outros',voices:['Ler / observar para entender o que deve ser feito','Registro de dados','Limpeza']}
+  ]},
+  SVA:{label:'SVA — Suporte Agrega Valor',color:'var(--sva-color)',bg:'var(--sva-bg)',sections:[
+    {macro:'Picking / Supply (SVA)',voices:['Segurar peça para montagem','Pegar peça para montagem','Posicionar peça para montagem','Unir peças para montagem','Martelar','Posicionar ferramenta para montagem']},
+    {macro:'Qualidade (Necessária)',voices:['Inspeções de qualidade PREVISTAS em processo','Testes de qualidade PREVISTOS em processo','Preenchimento de papéis / Decalques / Etiquetas']}
+  ]},
+  VAA:{label:'VAA — Valor Agregado',color:'var(--vaa-color)',bg:'var(--vaa-bg)',sections:[
+    {macro:'Transformação',voices:['Dobrar o material','Cortar o material','Furar','Embalar peças (para o cliente final)','Parafusar / Fixar','Encaixar','Soldar','Colar','Inserir','Identificar Produto','Fazer pré-tratamento','Pintar']}
+  ]}
+};
+const MUDA_VOICES_EN={
+  NVA:{label:'NVA — Non Value-Added',color:'var(--nva-color)',bg:'var(--nva-bg)',sections:[
+    {macro:'Imbalance',voices:['Rest allowance']},
+    {macro:'Pack / Unpack',voices:['Unpack / Open','Remove excess material','Detach / Disassemble','Mask / Unmask']},
+    {macro:'Walking',voices:['Fetch / return parts','Fetch / return tools']},
+    {macro:'Searching',voices:['Search for parts','Search for tools']},
+    {macro:'Body movements',voices:['Bending / Straightening up','Sit / Stand (rise)','Crouch / Straighten knees (rise)']},
+    {macro:'Waiting',voices:['Wait for cycle time']},
+    {macro:'Handling',voices:['Pick up / return part','Hold part','Position / rotate part','Pick up / return tool','Tool change / Setup']},
+    {macro:'Lifting',voices:['Attach / detach part from lifting device','Move part with lifting device']},
+    {macro:'Quality (unnecessary)',voices:['Unplanned quality inspections','Unplanned quality tests','Paperwork']},
+    {macro:'Other',voices:['Read / observe to understand task','Data recording','Cleaning']}
+  ]},
+  SVA:{label:'SVA — Support Value-Added',color:'var(--sva-color)',bg:'var(--sva-bg)',sections:[
+    {macro:'Picking / Supply (SVA)',voices:['Hold part for assembly','Pick part for assembly','Position part for assembly','Join parts for assembly','Hammering','Position tool for assembly']},
+    {macro:'Quality (Required)',voices:['Planned quality inspections','Planned quality tests','Paperwork / Labels / Stickers']}
+  ]},
+  VAA:{label:'VAA — Value-Added',color:'var(--vaa-color)',bg:'var(--vaa-bg)',sections:[
+    {macro:'Transformation',voices:['Bend material','Cut material','Drill','Pack parts (for end customer)','Screw / Fix','Clip','Weld','Glue','Insert','Label product','Pre-treatment','Paint']}
+  ]}
+};
+// Accessor: retorna vozes no idioma atual
+function getMudaVoices(){return currentLang==='en'?MUDA_VOICES_EN:MUDA_VOICES_PT;}
+// Compatibilidade: MUDA_VOICES é um proxy dinâmico
+let MUDA_VOICES=MUDA_VOICES_PT;
+
 
 // ═══════════════════════════════════════════════════
 // STATE
@@ -871,8 +918,10 @@ function applyLang(){
   if(isRunning&&!isPaused){hs=currentActivity?`${currentActivity}${isDoubleSpeed?' 2×':''}`:t('header.status.active');}
   else if(isPaused&&totalTime>0)hs=t('header.status.paused');
   if(statusText)statusText.textContent=hs;
-  // Redraw muda segment list (labels change)
-  if(isMudaMode)renderMudaSegmentList();
+  // Atualiza proxy MUDA_VOICES para idioma atual
+  MUDA_VOICES=getMudaVoices();
+  // Reconstrói botões de voz se estiver no modo Muda
+  if(isMudaMode){buildMudaVoiceButtons();renderMudaSegmentList();}
   drawTimeline();
 }
 
@@ -942,37 +991,59 @@ function drawTimeline(){
   tlCanvas.width=W;tlCanvas.height=H;
   const ctx=tlCanvas.getContext('2d');
   ctx.clearRect(0,0,W,H);
-  // dur: usa a maior referência entre a duration real do vídeo e totalTime
-  // isso evita desalinhamento após edições no modo Muda
-  const videoDur=videoElement.duration&&isFinite(videoElement.duration)?videoElement.duration:0;
-  const dur=Math.max(videoDur,totalTime/1000)||0;
-  if(dur<=0||activityLog.length===0)return;
   const cmap={'NVA':'#C0392B','SVA':'#C07818','VAA':'#1E8A50'};
-  for(let i=0;i<activityLog.length;i++){
-    const s=activityLog[i].time/1000;
-    const e=Math.min(i+1<activityLog.length?activityLog[i+1].time/1000:totalTime/1000,dur);
-    if(e<=s)continue;
-    ctx.fillStyle=cmap[activityLog[i].activity]||'#888';
-    ctx.fillRect((s/dur)*W,0,Math.max((e-s)/dur*W,1),H);
+
+  if(isMudaMode){
+    // MODO MUDA: desenha diretamente dos mudaSegments
+    // escala = duration real do vídeo (referência fixa)
+    const dur=(videoElement.duration&&isFinite(videoElement.duration)&&videoElement.duration>0)
+              ?videoElement.duration
+              :(mudaSegments.length?mudaSegments[mudaSegments.length-1].endSec:totalTime/1000)||1;
+    if(dur<=0||mudaSegments.length===0){if(isMudaMode)rebuildDragHandles();return;}
+    mudaSegments.forEach((sg,i)=>{
+      if(sg.endSec<=sg.startSec)return;
+      ctx.fillStyle=cmap[sg.category]||'#888';
+      ctx.fillRect((sg.startSec/dur)*W,0,Math.max((sg.endSec-sg.startSec)/dur*W,1),H);
+    });
+    // destaque do segmento selecionado
+    if(selectedMudaSegIdx>=0&&selectedMudaSegIdx<mudaSegments.length){
+      const sg=mudaSegments[selectedMudaSegIdx];
+      const x1=(sg.startSec/dur)*W,x2=(sg.endSec/dur)*W;
+      ctx.strokeStyle='rgba(0,0,0,.6)';ctx.lineWidth=2.5;ctx.strokeRect(x1+1,1,Math.max(x2-x1-2,1),H-2);
+      ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1.5;ctx.strokeRect(x1+2,2,Math.max(x2-x1-4,1),H-4);
+    }
+    // linhas divisórias entre segmentos
+    mudaSegments.forEach((sg,i)=>{if(i>0){const x=(sg.startSec/dur)*W;ctx.fillStyle='rgba(0,0,0,.3)';ctx.fillRect(x-1,0,2,H);}});
+    rebuildDragHandles();
+  } else {
+    // MODO CRONÔMETRO: desenha do activityLog
+    // escala = videoElement.duration se disponível, senão totalTime
+    const dur=(videoElement.duration&&isFinite(videoElement.duration)&&videoElement.duration>0)
+              ?videoElement.duration
+              :(totalTime/1000)||0;
+    if(dur<=0||activityLog.length===0)return;
+    for(let i=0;i<activityLog.length;i++){
+      const s=activityLog[i].time/1000;
+      const e=Math.min(i+1<activityLog.length?activityLog[i+1].time/1000:totalTime/1000,dur);
+      if(e<=s)continue;
+      ctx.fillStyle=cmap[activityLog[i].activity]||'#888';
+      ctx.fillRect((s/dur)*W,0,Math.max((e-s)/dur*W,1),H);
+    }
+    // linhas divisórias entre segmentos
+    for(let i=1;i<activityLog.length;i++){
+      const x=(activityLog[i].time/1000/dur)*W;
+      ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x-1,0,2,H);
+    }
   }
-  // highlight selected seg in muda mode
-  if(isMudaMode&&selectedMudaSegIdx>=0&&selectedMudaSegIdx<mudaSegments.length){
-    const sg=mudaSegments[selectedMudaSegIdx];
-    const x1=(sg.startSec/dur)*W,x2=(sg.endSec/dur)*W;
-    ctx.strokeStyle='rgba(0,0,0,.7)';ctx.lineWidth=2.5;ctx.strokeRect(x1+1,1,Math.max(x2-x1-2,1),H-2);
-    ctx.strokeStyle='rgba(255,255,255,.9)';ctx.lineWidth=1.5;ctx.strokeRect(x1+2,2,Math.max(x2-x1-4,1),H-4);
-  }
-  // segment boundary lines
-  for(let i=1;i<activityLog.length;i++){const x=(activityLog[i].time/1000/dur)*W;ctx.fillStyle='rgba(0,0,0,.25)';ctx.fillRect(x-1,0,2,H);}
-  // drag handles (in muda edit mode)
-  if(isMudaMode)rebuildDragHandles();
 }
 
 function rebuildDragHandles(){
-  // Remove old handles
   tlContainer.querySelectorAll('.tl-drag-handle').forEach(el=>el.remove());
   if(!isMudaMode)return;
-  const dur=videoElement.duration||totalTime/1000||1;
+  // Usa a mesma referência de dur que drawTimeline no modo Muda
+  const dur=(videoElement.duration&&isFinite(videoElement.duration)&&videoElement.duration>0)
+            ?videoElement.duration
+            :(mudaSegments.length?mudaSegments[mudaSegments.length-1].endSec:totalTime/1000)||1;
   const W=tlContainer.offsetWidth||1;
   mudaSegments.forEach((sg,i)=>{
     // right edge handle (can also be left of next segment)
@@ -997,7 +1068,9 @@ function endDragTouch(){document.removeEventListener('touchmove',onDragTouch);do
 function onDrag(e){onDragCore(e.clientX);}
 function onDragCore(clientX){
   if(!dragState)return;
-  const dur=videoElement.duration||totalTime/1000||1;
+  const dur=(videoElement.duration&&isFinite(videoElement.duration)&&videoElement.duration>0)
+            ?videoElement.duration
+            :(mudaSegments.length?mudaSegments[mudaSegments.length-1].endSec:totalTime/1000)||1;
   const W=tlContainer.offsetWidth||1;
   const dx=clientX-dragState.startX;
   const dsec=(dx/W)*dur;
@@ -1215,7 +1288,7 @@ function selectMudaSegment(idx){
 function updateSegHeaderDisplay(idx){
   if(idx<0||idx>=mudaSegments.length)return;
   const sg=mudaSegments[idx];
-  const cat=MUDA_VOICES[sg.category];
+  const cat=getMudaVoices()[sg.category];
   const color=cat?cat.color:'var(--text-muted)';
   document.getElementById('muda-seg-time-range').textContent=`${formatSec(sg.startSec)} → ${formatSec(sg.endSec)}  (${formatSec(sg.endSec-sg.startSec)})`;
   document.getElementById('muda-seg-current-voice').textContent=sg.voice?`${sg.macroVoice} → ${sg.voice}`:'Nenhuma causa selecionada';
@@ -1390,7 +1463,7 @@ function buildMudaVoiceButtons(){
   const container=document.getElementById('muda-voices-container');if(!container)return;
   if(selectedMudaSegIdx<0||selectedMudaSegIdx>=mudaSegments.length){container.innerHTML=`<p style="color:var(--text-muted);font-size:.76rem;padding:.5rem">Selecione um segmento na lista ou clique na linha do tempo.</p>`;return;}
   const sg=mudaSegments[selectedMudaSegIdx];
-  const cat=MUDA_VOICES[sg.category];if(!cat){container.innerHTML=`<p style="color:var(--text-muted);font-size:.76rem">Categoria desconhecida.</p>`;return;}
+  const cat=getMudaVoices()[sg.category];if(!cat){container.innerHTML=`<p style="color:var(--text-muted);font-size:.76rem">Categoria desconhecida.</p>`;return;}
   let html='';
   cat.sections.forEach(sec=>{
     html+=`<div class="voice-section"><div class="voice-section-title">${sec.macro}</div><div class="voice-grid">`;
@@ -1634,7 +1707,7 @@ function generateMudaReport(){
     const cd=catTimes[cat];if(!cd)return;
     const macros=macroMap[cat];const mks=Object.keys(macros).sort((a,b)=>macros[b]-macros[a]);
     let rows=mks.map(m=>`<tr style="border-bottom:1px solid #252a38"><td style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:11px;font-weight:600;color:${catColors[cat]};letter-spacing:.06em">${m}</td><td style="padding:7px 10px;font-family:'Space Mono',monospace;font-size:10px;color:#8a90a8">${formatSec(macros[m])}</td><td style="padding:7px 10px;font-family:'Space Mono',monospace;font-size:10px;color:${catColors[cat]};font-weight:700">${pct(macros[m],cd)}%</td></tr>`).join('');
-    catSections+=`<div style="margin-bottom:18px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:10px;height:10px;border-radius:2px;background:${catColors[cat]}"></div><span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${catColors[cat]}">${MUDA_VOICES[cat].label}</span><span style="margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:#8a90a8">${formatSec(cd)} · ${pct(cd,totalSec)}% do total</span></div><div style="border:1px solid #252a38;border-radius:6px;overflow:hidden;background:#13161e"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1a1e2a"><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">Macro Causa</th><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">Tempo</th><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">%</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
+    catSections+=`<div style="margin-bottom:18px"><div style="display:flex;align-items:center;gap:8px;margin-bottom:8px"><div style="width:10px;height:10px;border-radius:2px;background:${catColors[cat]}"></div><span style="font-family:'Rajdhani',sans-serif;font-size:13px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:${catColors[cat]}">${getMudaVoices()[cat].label}</span><span style="margin-left:auto;font-family:'Space Mono',monospace;font-size:11px;color:#8a90a8">${formatSec(cd)} · ${pct(cd,totalSec)}% do total</span></div><div style="border:1px solid #252a38;border-radius:6px;overflow:hidden;background:#13161e"><table style="width:100%;border-collapse:collapse"><thead><tr style="background:#1a1e2a"><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">Macro Causa</th><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">Tempo</th><th style="padding:7px 10px;font-family:'Rajdhani',sans-serif;font-size:9px;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#4a5068;text-align:left;border-bottom:1px solid #252a38">%</th></tr></thead><tbody>${rows}</tbody></table></div></div>`;
   });
 
   // Root-cause table
