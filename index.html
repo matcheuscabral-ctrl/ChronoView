@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
 <title>Chá de Panela · Fernanda &amp; Matheus</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.googleapis.com">a
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,600;0,700;1,500&family=Montserrat:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
@@ -677,16 +677,19 @@ function renderObrigadoNaoVai(){
       ${bannerAmbiente()}
       <div class="hero">
         <div class="monograma">${NOIVOS.ela} &amp; ${NOIVOS.ele}</div>
-        <h1>Sentiremos sua falta, <em>${escapeHtml(nomeConvidadoAtual)}</em></h1>
+        <h1>Que pena, <em>${escapeHtml(nomeConvidadoAtual)}</em>! 💌</h1>
         <div class="divisor-floral"><span class="traco"></span>${iconeFloral()}<span class="traco"></span></div>
-        <p class="subtitulo">Obrigado por nos avisar! Sua resposta foi registrada. Esperamos celebrar com você em outro momento.</p>
+        <p class="subtitulo">Vamos sentir sua falta nesse dia tão especial! Sua resposta já foi registrada. Mas se mesmo assim você quiser nos ajudar com um carinho para a nossa nova casa, é só dar uma olhadinha na lista abaixo — fica ao seu critério. 💛</p>
       </div>
       <div class="cartao" style="text-align:center;">
+        <button type="button" class="botao botao-primario" id="btn-ver-lista-mesmo-assim">Ver Lista de Presentes</button>
+        <div style="height:10px;"></div>
         <button type="button" class="botao botao-fantasma" id="btn-voltar">Voltar ao início</button>
       </div>
       <div class="rodape-admin"><button type="button" id="btn-abrir-admin">Área administrativa</button></div>
     </div>
   `;
+  document.getElementById('btn-ver-lista-mesmo-assim').addEventListener('click', renderListaPresentes);
   document.getElementById('btn-voltar').addEventListener('click', renderEntrada);
   document.getElementById('btn-abrir-admin').addEventListener('click', abrirLoginAdmin);
 }
