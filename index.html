@@ -1169,8 +1169,6 @@ function preencherTabelaPresentes(){
   tbody.querySelectorAll('.btn-liberar-presente').forEach(btn => btn.addEventListener('click', () => liberarReservaAdmin(btn.dataset.id)));
 }
 
-// Permite ao administrador cancelar a reserva de qualquer convidado
-// (ex.: a pessoa desistiu de trazer o presente, ou pediu para trocar).
 function liberarReservaAdmin(id){
   const presente = presentes.find(p => p.id === id);
   if(!presente) return;
@@ -1189,7 +1187,6 @@ function liberarReservaAdmin(id){
     }
   });
 }
-
 
 function abrirModalEditarPresente(id){
   const presente = presentes.find(p => p.id === id);
