@@ -69,6 +69,10 @@ body.mobile-mode #mobile-banner{display:flex;}
 #analysis-video{width:100%;display:none;max-height:60vh;background:#000;}
 #video-placeholder{min-height:200px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.75rem;padding:2rem;border:2px dashed var(--border-bright);border-radius:6px;margin:1rem;transition:all .2s;}
 #video-placeholder p{color:var(--text-muted);font-size:.82rem;text-align:center;line-height:1.6;}
+#video-name-bar{display:flex;align-items:center;gap:.4rem;padding:.5rem 1rem;border-bottom:1px solid var(--border);background:var(--bg-elevated);}
+#video-name-bar svg{color:var(--accent-amber);}
+#video-name-text{font-family:'Inter',sans-serif;font-size:.8rem;font-weight:600;color:var(--text-primary);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+#video-name-text.no-video{color:var(--text-muted);font-weight:400;font-style:italic;}
 .video-controls-bar{padding:.6rem 1rem;border-top:1px solid var(--border);background:var(--bg-elevated);display:flex;gap:.4rem;align-items:center;}
 .drag-over #video-placeholder{border-color:var(--accent-amber)!important;box-shadow:0 0 0 3px rgba(200,16,46,.2);}
 
@@ -77,6 +81,15 @@ body.mobile-mode #mobile-banner{display:flex;}
 #timeline-label-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:.38rem;}
 .tl-label{font-family:'Inter',sans-serif;font-size:.67rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--text-muted);}
 #timeline-bar-container{position:relative;height:32px;background:var(--bg-input);border:1px solid var(--border);border-radius:5px;overflow:visible;cursor:pointer;}
+#cycle-marker-strip{position:relative;height:10px;margin-top:2px;display:none;}
+#cycle-marker-strip.visible{display:block;}
+.cycle-marker{position:absolute;top:0;height:100%;border-left:2px solid #a855f7;}
+.cycle-marker-label{position:absolute;top:0;left:2px;font-family:'Inter',sans-serif;font-size:.56rem;color:#a855f7;font-weight:700;white-space:nowrap;}
+.cycle-list-item{display:flex;align-items:center;justify-content:space-between;gap:.4rem;padding:.32rem .55rem;border-bottom:1px solid var(--border);font-size:.7rem;cursor:pointer;}
+.cycle-list-item:hover{background:var(--bg-elevated);}
+.cycle-list-item:last-child{border-bottom:none;}
+.cycle-list-item .cy-review{color:var(--nva-color);font-weight:600;}
+.cycle-list-item .cy-ok{color:var(--vaa-color);}
 #timeline-canvas{position:absolute;top:0;left:0;width:100%;height:100%;border-radius:4px;pointer-events:none;}
 #timeline-playhead{position:absolute;top:-2px;width:2px;height:calc(100% + 4px);background:#1C1C1A;opacity:.7;pointer-events:none;z-index:4;}
 /* Drag handle knobs on segment boundaries */
@@ -288,6 +301,10 @@ body.muda-layout #video-placeholder{min-height:120px;}
       <span class="panel-title" data-i18n="video.title">Vídeo de Análise</span>
       <span id="video-mode-badge" style="margin-left:auto;font-family:'Inter',sans-serif;font-size:.67rem;letter-spacing:.1em;text-transform:uppercase;color:var(--text-muted)" data-i18n="video.badge.analysis">MODO ANÁLISE</span>
     </div>
+    <div id="video-name-bar">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" style="width:13px;height:13px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5l4.72-4.72a.75.75 0 011.28.53v11.38a.75.75 0 01-1.28.53l-4.72-4.72M4.5 18.75h9a2.25 2.25 0 002.25-2.25v-9a2.25 2.25 0 00-2.25-2.25h-9A2.25 2.25 0 002.25 7.5v9a2.25 2.25 0 002.25 2.25z"/></svg>
+      <span id="video-name-text" data-i18n="video.name.none">Nenhum vídeo carregado</span>
+    </div>
     <div id="video-drop-zone">
       <div id="video-placeholder">
         <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1" stroke="currentColor" style="width:42px;height:42px;color:var(--text-muted)"><path stroke-linecap="round" stroke-linejoin="round" d="M3.375 19.5h17.25m-17.25 0a1.125 1.125 0 01-1.125-1.125M3.375 19.5h1.5C5.496 19.5 6 18.996 6 18.375m-3.75.125l-.621-9.93A1.125 1.125 0 012.507 7.5h16.986a1.125 1.125 0 011.128 1.07l-.621 9.93M6 18.375V7.875m0 0A1.125 1.125 0 017.125 6.75h9.75A1.125 1.125 0 0118 7.875v10.5"/></svg>
@@ -310,6 +327,7 @@ body.muda-layout #video-placeholder{min-height:120px;}
         <div id="timeline-hover-tooltip"></div>
         <!-- drag handles injected by JS -->
       </div>
+      <div id="cycle-marker-strip"></div>
       <div id="timeline-segment-info" data-i18n="tl.empty">Classifique atividades para preencher a linha do tempo</div>
       <div id="timeline-resume-bar" style="display:none;margin-top:.35rem;display:none;align-items:center;gap:.5rem;padding:.3rem .5rem;background:rgba(200,16,46,.12);border:1px solid rgba(200,16,46,.35);border-radius:5px">
         <span id="timeline-resume-label" style="font-family:'Inter',sans-serif;font-size:.65rem;color:var(--accent-amber);flex:1">—</span>
@@ -345,6 +363,33 @@ body.muda-layout #video-placeholder{min-height:120px;}
     </div>
     <div class="panel-body" style="padding:.75rem">
 
+      <!-- DETECÇÃO INTELIGENTE DE CICLOS (IA local via MediaPipe Pose, roda no navegador, sem custo) -->
+      <div id="cycle-panel" style="background:var(--bg-elevated);border:1px solid rgba(168,85,247,.35);border-radius:6px;padding:.6rem .75rem;margin-bottom:.75rem">
+        <div style="display:flex;align-items:center;gap:.4rem;margin-bottom:.5rem">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="#c084fc" style="width:13px;height:13px;flex-shrink:0"><path stroke-linecap="round" stroke-linejoin="round" d="M9.813 15.904L9 18.75l-.813-2.846a4.5 4.5 0 00-3.09-3.09L2.25 12l2.846-.813a4.5 4.5 0 003.09-3.09L9 5.25l.813 2.846a4.5 4.5 0 003.09 3.09L15.75 12l-2.846.813a4.5 4.5 0 00-3.09 3.09zM18.259 8.715L18 9.75l-.259-1.035a3.375 3.375 0 00-2.455-2.456L14.25 6l1.036-.259a3.375 3.375 0 002.455-2.456L18 2.25l.259 1.035a3.375 3.375 0 002.456 2.456L21.75 6l-1.035.259a3.375 3.375 0 00-2.456 2.456z"/></svg>
+          <span style="font-family:'Inter',sans-serif;font-size:.68rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#c084fc" data-i18n="cycle.title">Detecção Inteligente de Ciclos</span>
+        </div>
+        <p style="font-size:.7rem;color:var(--text-muted);margin:0 0 .55rem" data-i18n="cycle.subtitle">IA local (MediaPipe Pose) — roda no seu navegador, sem custo e sem enviar o vídeo pra lugar nenhum.</p>
+        <button id="btn-analyze-cycles" class="cv-btn btn-purple" style="width:100%;justify-content:center" onclick="startCycleDetection()">
+          <span data-i18n="cycle.btn.analyze">🤖 Analisar Vídeo e Detectar Ciclos</span>
+        </button>
+        <div id="cycle-progress-wrap" style="display:none;margin-top:.5rem">
+          <div style="background:var(--bg-input);border:1px solid var(--border);border-radius:10px;height:16px;overflow:hidden;position:relative">
+            <div id="cycle-progress-fill" style="background:#c084fc;height:100%;width:0%;transition:width .15s"></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;margin-top:.25rem">
+            <span id="cycle-progress-text" style="font-size:.68rem;color:var(--text-muted)">0%</span>
+            <button id="btn-cancel-cycle" onclick="cancelCycleDetection()" style="background:none;border:none;color:var(--nva-color);font-size:.68rem;cursor:pointer;text-decoration:underline" data-i18n="cycle.btn.cancel">Cancelar</button>
+          </div>
+        </div>
+        <div id="cycle-results" style="display:none;margin-top:.55rem">
+          <p id="cycle-summary" style="font-size:.76rem;color:var(--text-primary);font-weight:600;margin:0 0 .5rem"></p>
+          <button id="btn-apply-template" class="cv-btn" style="width:100%;justify-content:center;background:rgba(34,197,94,.12);color:#16A34A;border:1px solid rgba(34,197,94,.35)" onclick="applyCycleTemplate()" disabled>
+            <span data-i18n="cycle.btn.apply">📋 Classifique o Ciclo 1 e clique aqui pra aplicar aos demais</span>
+          </button>
+          <div id="cycle-list" class="log-list" style="max-height:130px;margin-top:.5rem"></div>
+        </div>
+      </div>
       <!-- METADATA FIELDS -->
       <div style="margin-bottom:.75rem">
         <div style="font-family:'Inter',sans-serif;font-size:.68rem;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:#c084fc;margin-bottom:.45rem;display:flex;align-items:center;gap:.4rem">
@@ -803,6 +848,23 @@ const LANG={
     'classify.inferred.lubrication':'lubrificação','classify.inferred.deburring':'remoção de rebarba','classify.inferred.tightenCouple':'apertar/acoplar',
     // Muda panel
     'muda.title':'Análise de Muda','muda.back':'Voltar ao Cronômetro',
+    'cycle.title':'Detecção Inteligente de Ciclos',
+    'cycle.subtitle':'IA local (MediaPipe Pose) — roda no seu navegador, sem custo e sem enviar o vídeo pra lugar nenhum.',
+    'cycle.btn.analyze':'🤖 Analisar Vídeo e Detectar Ciclos',
+    'cycle.btn.cancel':'Cancelar',
+    'cycle.btn.apply':'📋 Classifique o Ciclo 1 e clique aqui pra aplicar aos demais',
+    'cycle.btn.apply.ready':'📋 Aplicar Padrão do Ciclo 1 aos Demais Ciclos',
+    'cycle.progress.loading':'Carregando modelo de IA (primeira vez)...',
+    'cycle.progress.analyzing':'Analisando movimento...',
+    'cycle.summary':'%n ciclos detectados · ~%d por ciclo',
+    'cycle.summary.none':'Não foi possível detectar um padrão repetitivo claro neste vídeo.',
+    'cycle.confirm.apply':'Isso vai classificar os %n ciclos restantes com base no Ciclo 1. Você pode revisar e ajustar depois. Continuar?',
+    'cycle.applied':'Padrão aplicado! Revise principalmente os ciclos marcados com ⚠.',
+    'cycle.needFirstCycle':'Classifique pelo menos um segmento dentro do Ciclo 1 antes de aplicar o padrão.',
+    'cycle.item.review':'⚠ revisar',
+    'cycle.item.ok':'✓ similar ao ciclo 1',
+    'cycle.error.noVideo':'Carregue um vídeo antes de analisar.',
+    'cycle.error.generic':'Não foi possível carregar a IA local (verifique sua conexão com a internet — é só na primeira vez).',
     'muda.seg.select':'Selecione um segmento','muda.seg.selected':'Segmento selecionado',
     'muda.seg.nocause':'Nenhuma causa selecionada',
     'muda.category.label':'Categoria:','muda.time.label':'Tempo:','muda.split.label':'Dividir em:',
@@ -829,7 +891,7 @@ const LANG={
     'muda.rep.col.percentTotal':'% Total','muda.rep.col.occurrences':'Ocorr.','muda.rep.noCauseAssigned':'Nenhuma causa atribuída ainda.',
     'muda.rep.segmentLog':'Log de Segmentos','muda.rep.col.num':'#','muda.rep.col.interval':'Intervalo','muda.rep.col.dur':'Dur.',
     'muda.rep.col.cat':'Cat.','muda.rep.col.cause':'Causa','muda.rep.col.steps':'Passos',
-    'history.defaultName':'Medição','video.name.noVideo':'Análise sem vídeo',
+    'history.defaultName':'Medição','video.name.noVideo':'Análise sem vídeo','video.name.none':'Nenhum vídeo carregado',
     'print.subtitle':'Análise de Tempos & Métodos · v6.0','print.sourceLabel':'Fonte de análise',
     'print.totalTimeAnalyzed':'Tempo Total Analisado','print.distResults':'Distribuição & Resultados',
     'print.col.indicator':'Indicador','print.bars':'Barras','print.dataForSheet':'Dados para Planilha',
@@ -846,6 +908,8 @@ const LANG={
     'xlsx.chart.title':'Gráfico — Distribuição por Categoria (%)','xlsx.chart.category':'Categoria',
     'xlsx.raw.col.startSec':'Início (s)','xlsx.raw.col.endSec':'Fim (s)','xlsx.raw.col.durSec':'Duração (s)',
     'xlsx.pieChartTitle':'Distribuição NVA / SVA / VAA',
+    'xlsx.macroChartTitle':'NVA — Distribuição por Macro Causa [%]',
+    'xlsx.voiceChartTitle':'NVA — Distribuição por Voz Causal (26 tipos) [%]',
     'import.success':'Importado! %n segmentos carregados na linha do tempo.',
     'import.error':'Erro ao importar a planilha. Verifique se é um arquivo .xlsx exportado pelo próprio ChronoView.',
     'import.noSegments':'Não foi possível encontrar segmentos válidos nessa planilha.',
@@ -916,6 +980,23 @@ const LANG={
     'classify.inferred.lubrication':'lubrication','classify.inferred.deburring':'deburring','classify.inferred.tightenCouple':'tighten/couple',
     // Muda panel
     'muda.title':'Muda Analysis','muda.back':'Back to Stopwatch',
+    'cycle.title':'Smart Cycle Detection',
+    'cycle.subtitle':'Local AI (MediaPipe Pose) — runs in your browser, free, and never sends your video anywhere.',
+    'cycle.btn.analyze':'🤖 Analyze Video and Detect Cycles',
+    'cycle.btn.cancel':'Cancel',
+    'cycle.btn.apply':'📋 Classify Cycle 1 then click here to apply to the rest',
+    'cycle.btn.apply.ready':'📋 Apply Cycle 1 Pattern to Remaining Cycles',
+    'cycle.progress.loading':'Loading AI model (first time only)...',
+    'cycle.progress.analyzing':'Analyzing movement...',
+    'cycle.summary':'%n cycles detected · ~%d per cycle',
+    'cycle.summary.none':'Could not detect a clear repeating pattern in this video.',
+    'cycle.confirm.apply':'This will classify the remaining %n cycles based on Cycle 1. You can review and adjust afterwards. Continue?',
+    'cycle.applied':'Pattern applied! Review especially the cycles marked with ⚠.',
+    'cycle.needFirstCycle':'Classify at least one segment within Cycle 1 before applying the pattern.',
+    'cycle.item.review':'⚠ review',
+    'cycle.item.ok':'✓ similar to cycle 1',
+    'cycle.error.noVideo':'Load a video before analyzing.',
+    'cycle.error.generic':'Could not load the local AI model (check your internet connection — this only happens the first time).',
     'muda.seg.select':'Select a segment','muda.seg.selected':'Selected segment',
     'muda.seg.nocause':'No cause selected',
     'muda.category.label':'Category:','muda.time.label':'Time:','muda.split.label':'Split at:',
@@ -942,7 +1023,7 @@ const LANG={
     'muda.rep.col.percentTotal':'% Total','muda.rep.col.occurrences':'Occ.','muda.rep.noCauseAssigned':'No cause assigned yet.',
     'muda.rep.segmentLog':'Segment Log','muda.rep.col.num':'#','muda.rep.col.interval':'Interval','muda.rep.col.dur':'Dur.',
     'muda.rep.col.cat':'Cat.','muda.rep.col.cause':'Cause','muda.rep.col.steps':'Steps',
-    'history.defaultName':'Measurement','video.name.noVideo':'Analysis without video',
+    'history.defaultName':'Measurement','video.name.noVideo':'Analysis without video','video.name.none':'No video loaded',
     'print.subtitle':'Time & Motion Analysis · v6.0','print.sourceLabel':'Analysis source',
     'print.totalTimeAnalyzed':'Total Time Analyzed','print.distResults':'Distribution & Results',
     'print.col.indicator':'Indicator','print.bars':'Bars','print.dataForSheet':'Data for Spreadsheet',
@@ -959,6 +1040,8 @@ const LANG={
     'xlsx.chart.title':'Chart — Distribution by Category (%)','xlsx.chart.category':'Category',
     'xlsx.raw.col.startSec':'Start (s)','xlsx.raw.col.endSec':'End (s)','xlsx.raw.col.durSec':'Duration (s)',
     'xlsx.pieChartTitle':'NVA / SVA / VAA Distribution',
+    'xlsx.macroChartTitle':'NVA — Distribution by Macro Cause [%]',
+    'xlsx.voiceChartTitle':'NVA — Distribution by Causal Voice (26 types) [%]',
     'import.success':'Imported! %n segments loaded onto the timeline.',
     'import.error':'Error importing the spreadsheet. Make sure it is an .xlsx file exported by ChronoView itself.',
     'import.noSegments':'Could not find valid segments in this spreadsheet.',
@@ -1747,6 +1830,7 @@ function setMudaVoice(idx,voice,macro){
 
 function renderMudaSegmentList(){
   const list=document.getElementById('muda-segment-list');if(!list)return;
+  if(typeof updateApplyButtonState==='function')updateApplyButtonState();
   if(mudaSegments.length===0){list.innerHTML=`<p style="color:var(--text-muted);text-align:center;font-size:.74rem;padding:1rem">${t('muda.list.empty')}</p>`;return;}
   const cm={'NVA':'var(--nva-color)','SVA':'var(--sva-color)','VAA':'var(--vaa-color)'};
   list.innerHTML=mudaSegments.map((s,i)=>`
@@ -1899,13 +1983,21 @@ function undoLastEvent(){
 function saveAndResetTimer(){
   if(totalTime>0){if(!window.confirm(t('reset.confirm').replace('%s',formatTimeSimple(totalTime))))return;stopTimer();isPaused=true;let nP=Math.round((nvaTime/totalTime)*100)||0;let sP=Math.round((svaTime/totalTime)*100)||0;let vP=100-nP-sP;if(vP<0){vP=0;nP=100-sP;if(nP<0)nP=0;}saveMeasurement(nP,sP,vP,JSON.parse(JSON.stringify(classificationStartPoints)));activityLog=[];localStorage.removeItem('cronoState');resetTimer();}else resetTimer();
 }
+function resetCycleDetectionState(){
+  cycleDetectionCancelled=true;
+  movementSignal=[];detectedCycles=[];
+  const strip=document.getElementById('cycle-marker-strip');if(strip){strip.innerHTML='';strip.classList.remove('visible');}
+  const results=document.getElementById('cycle-results');if(results)results.style.display='none';
+  const progWrap=document.getElementById('cycle-progress-wrap');if(progWrap)progWrap.style.display='none';
+  const btn=document.getElementById('btn-analyze-cycles');if(btn){btn.disabled=false;btn.style.opacity='1';}
+}
 function resetTimer(){
   stopTimer();totalTime=nvaTime=svaTime=vaaTime=0;isRunning=false;isPaused=true;isDoubleSpeed=false;currentActivity=null;
   classificationStartPoints.NVA.length=0;classificationStartPoints.SVA.length=0;classificationStartPoints.VAA.length=0;currentVideoFileName='AnaliseSemVideo';
   if(videoElement.src){videoElement.pause();videoElement.currentTime=0;videoElement.playbackRate=1.0;}
   document.querySelectorAll('.indicator-button').forEach(b=>{b.classList.remove('active');b.style.opacity='.5';});
   closeReport();if(excelDataInput)excelDataInput.value='0% 0% 0%';if(excelTimesInput)excelTimesInput.value='00:00:00 00:00:00 00:00:00';
-  drawTimeline();updateDisplay();renderLog();reFetchModalElements();attachReportModalListeners();saveState();
+  drawTimeline();updateDisplay();renderLog();reFetchModalElements();attachReportModalListeners();saveState();updateVideoNameBar();
 }
 
 // ═══════════════════════════════════════════════════
@@ -2257,11 +2349,68 @@ function exportMudaJSON(){
     resRows.push(cN(2,rr,+(pctVal/100).toFixed(4),45));
     resRows.push('</row>');rr++;
   });
+
+  // ── Dados de apoio para os 2 gráficos de barra (9 macros + 26 vozes do NVA) ──
+  const nvaTotalForCharts=catTimes.NVA||0;
+  const nvaSectionsAll=getMudaVoices().NVA.sections;      // 10 seções (inclui "Desbalanceamento")
+  const nvaSections9=nvaSectionsAll.slice(1);              // 9 macros, sem "Desbalanceamento"
+  const macro9Data=nvaSections9.map(sec=>{
+    const dur=macroMap.NVA[sec.macro]||0;
+    return [sec.macro, nvaTotalForCharts>0?dur/nvaTotalForCharts:0];
+  });
+  const voice26Data=[];
+  nvaSectionsAll.forEach(sec=>sec.voices.forEach(vName=>{
+    const entry=voiceMap[vName];
+    const dur=(entry&&entry.cat==='NVA')?entry.dur:0;
+    voice26Data.push([vName, nvaTotalForCharts>0?dur/nvaTotalForCharts:0]);
+  }));
+
+  rr++; // linha em branco
+  resRows.push(rO(rr,20));
+  resRows.push(cS(1,rr,ss(t('xlsx.macroChartTitle')),3));
+  resRows.push('</row>');rr++;
+  resRows.push(rO(rr,16));
+  resRows.push(cS(1,rr,ss(t('xlsx.chart.category')),42));
+  resRows.push(cS(2,rr,ss(t('rep.pct')),42));
+  resRows.push('</row>');rr++;
+  const macro9FirstRow=rr;
+  macro9Data.forEach(([label,frac])=>{
+    resRows.push(rO(rr,18));
+    resRows.push(cS(1,rr,ss(label),12));
+    resRows.push(cN(2,rr,+frac.toFixed(4),45));
+    resRows.push('</row>');rr++;
+  });
+
+  rr++; // linha em branco
+  resRows.push(rO(rr,20));
+  resRows.push(cS(1,rr,ss(t('xlsx.voiceChartTitle')),3));
+  resRows.push('</row>');rr++;
+  resRows.push(rO(rr,16));
+  resRows.push(cS(1,rr,ss(t('xlsx.chart.category')),42));
+  resRows.push(cS(2,rr,ss(t('rep.pct')),42));
+  resRows.push('</row>');rr++;
+  const voice26FirstRow=rr;
+  voice26Data.forEach(([label,frac])=>{
+    resRows.push(rO(rr,18));
+    resRows.push(cS(1,rr,ss(label),12));
+    resRows.push(cN(2,rr,+frac.toFixed(4),45));
+    resRows.push('</row>');rr++;
+  });
+
   const chartAnchorRow0=1;
   const chartAnchorRowEnd0=chartAnchorRow0+16;
   const sheetSummaryName=t('xlsx.sheet.summary');
   const chartCatRange=`'${sheetSummaryName}'!$A$${chartFirstDataRow}:$A$${chartFirstDataRow+2}`;
   const chartValRange=`'${sheetSummaryName}'!$B$${chartFirstDataRow}:$B$${chartFirstDataRow+2}`;
+  const macro9CatRange=`'${sheetSummaryName}'!$A$${macro9FirstRow}:$A$${macro9FirstRow+8}`;
+  const macro9ValRange=`'${sheetSummaryName}'!$B$${macro9FirstRow}:$B$${macro9FirstRow+8}`;
+  const voice26CatRange=`'${sheetSummaryName}'!$A$${voice26FirstRow}:$A$${voice26FirstRow+25}`;
+  const voice26ValRange=`'${sheetSummaryName}'!$B$${voice26FirstRow}:$B$${voice26FirstRow+25}`;
+  // Âncoras dos 2 gráficos de barra — logo abaixo do gráfico de pizza
+  const chartAnchorRow1=chartAnchorRowEnd0+1;
+  const chartAnchorRowEnd1=chartAnchorRow1+18;
+  const chartAnchorRow2=chartAnchorRowEnd1+1;
+  const chartAnchorRowEnd2=chartAnchorRow2+22;
   const resColDefs=[32,14,10,10,12,10].map((w,i)=>`<col min="${i+1}" max="${i+1}" width="${w}" customWidth="1"/>`).join('');
   const resXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><worksheet xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><sheetViews><sheetView showGridLines="0" workbookViewId="0"/></sheetViews><sheetFormatPr defaultRowHeight="22" customHeight="1"/><cols>${resColDefs}</cols><sheetData>${resRows.join('')}</sheetData><mergeCells count="${resMg.length}">${resMg.join('')}</mergeCells><drawing r:id="rId1"/></worksheet>`;
 
@@ -2295,14 +2444,24 @@ function exportMudaJSON(){
 
   // ── Gráfico de pizza nativo (chart1.xml) — cores NVA/SVA/VAA da marca ──
   const chart1Xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1200" b="1"><a:solidFill><a:srgbClr val="181A1F"/></a:solidFill></a:defRPr></a:pPr><a:r><a:rPr lang="${currentLang==='en'?'en-US':'pt-BR'}" sz="1200" b="1"/><a:t>${xe(t('xlsx.pieChartTitle'))}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/><c:pieChart><c:varyColors val="1"/><c:ser><c:idx val="0"/><c:order val="0"/><c:dPt><c:idx val="0"/><c:bubble3D val="0"/><c:spPr><a:solidFill><a:srgbClr val="C0392B"/></a:solidFill></c:spPr></c:dPt><c:dPt><c:idx val="1"/><c:bubble3D val="0"/><c:spPr><a:solidFill><a:srgbClr val="C07818"/></a:solidFill></c:spPr></c:dPt><c:dPt><c:idx val="2"/><c:bubble3D val="0"/><c:spPr><a:solidFill><a:srgbClr val="1E8A50"/></a:solidFill></c:spPr></c:dPt><c:dLbls><c:numFmt formatCode="0%" sourceLinked="0"/><c:spPr><a:noFill/><a:ln><a:noFill/></a:ln></c:spPr><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1000" b="1"><a:solidFill><a:srgbClr val="FFFFFF"/></a:solidFill></a:defRPr></a:pPr><a:endParaRPr lang="${currentLang==='en'?'en-US':'pt-BR'}"/></a:p></c:txPr><c:showLegendKey val="0"/><c:showVal val="0"/><c:showCatName val="0"/><c:showSerName val="0"/><c:showPercent val="1"/><c:showBubbleSize val="0"/></c:dLbls><c:cat><c:strRef><c:f>${chartCatRange}</c:f><c:strCache><c:ptCount val="3"/><c:pt idx="0"><c:v>NVA</c:v></c:pt><c:pt idx="1"><c:v>SVA</c:v></c:pt><c:pt idx="2"><c:v>VAA</c:v></c:pt></c:strCache></c:strRef></c:cat><c:val><c:numRef><c:f>${chartValRange}</c:f><c:numCache><c:formatCode>0%</c:formatCode><c:ptCount val="3"/><c:pt idx="0"><c:v>${(nP/100).toFixed(4)}</c:v></c:pt><c:pt idx="1"><c:v>${(sP/100).toFixed(4)}</c:v></c:pt><c:pt idx="2"><c:v>${(vP/100).toFixed(4)}</c:v></c:pt></c:numCache></c:numRef></c:val></c:ser><c:firstSliceAng val="0"/></c:pieChart></c:plotArea><c:legend><c:legendPos val="b"/><c:overlay val="0"/></c:legend><c:plotVisOnly val="1"/></c:chart></c:chartSpace>`;
+
+  // ── Gráficos de barra nativos (chart2.xml / chart3.xml) — 9 macros e 26 vozes do NVA ──
+  function buildBarChartXml(titleText,catRange,valRange,items,axId1,axId2){
+    const n=items.length;
+    const catPts=items.map(([label],i)=>`<c:pt idx="${i}"><c:v>${xe(label)}</c:v></c:pt>`).join('');
+    const valPts=items.map(([,frac],i)=>`<c:pt idx="${i}"><c:v>${frac.toFixed(4)}</c:v></c:pt>`).join('');
+    return `<?xml version="1.0" encoding="UTF-8" standalone="yes"?><c:chartSpace xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><c:chart><c:title><c:tx><c:rich><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="1100" b="1"><a:solidFill><a:srgbClr val="181A1F"/></a:solidFill></a:defRPr></a:pPr><a:r><a:rPr lang="${currentLang==='en'?'en-US':'pt-BR'}" sz="1100" b="1"/><a:t>${xe(titleText)}</a:t></a:r></a:p></c:rich></c:tx><c:overlay val="0"/></c:title><c:autoTitleDeleted val="0"/><c:plotArea><c:layout/><c:barChart><c:barDir val="col"/><c:grouping val="clustered"/><c:varyColors val="0"/><c:ser><c:idx val="0"/><c:order val="0"/><c:spPr><a:solidFill><a:srgbClr val="C0392B"/></a:solidFill></c:spPr><c:cat><c:strRef><c:f>${catRange}</c:f><c:strCache><c:ptCount val="${n}"/>${catPts}</c:strCache></c:strRef></c:cat><c:val><c:numRef><c:f>${valRange}</c:f><c:numCache><c:formatCode>0%</c:formatCode><c:ptCount val="${n}"/>${valPts}</c:numCache></c:numRef></c:val></c:ser><c:gapWidth val="40"/><c:axId val="${axId1}"/><c:axId val="${axId2}"/></c:barChart><c:catAx><c:axId val="${axId1}"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="b"/><c:txPr><a:bodyPr rot="-2700000" vert="horz"/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="700"/></a:pPr><a:endParaRPr lang="${currentLang==='en'?'en-US':'pt-BR'}"/></a:p></c:txPr><c:crossAx val="${axId2}"/></c:catAx><c:valAx><c:axId val="${axId2}"/><c:scaling><c:orientation val="minMax"/></c:scaling><c:delete val="0"/><c:axPos val="l"/><c:numFmt formatCode="0%" sourceLinked="0"/><c:txPr><a:bodyPr/><a:lstStyle/><a:p><a:pPr><a:defRPr sz="800"/></a:pPr><a:endParaRPr lang="${currentLang==='en'?'en-US':'pt-BR'}"/></a:p></c:txPr><c:crossAx val="${axId1}"/></c:valAx></c:plotArea><c:plotVisOnly val="1"/></c:chart></c:chartSpace>`;
+  }
+  const chart2Xml=buildBarChartXml(t('xlsx.macroChartTitle'),macro9CatRange,macro9ValRange,macro9Data,111111111,111111112);
+  const chart3Xml=buildBarChartXml(t('xlsx.voiceChartTitle'),voice26CatRange,voice26ValRange,voice26Data,222222221,222222222);
   // ── Âncora do gráfico na planilha (drawing1.xml) ──
-  const drawing1Xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><xdr:twoCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRow0}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRowEnd0}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Gráfico NVA SVA VAA"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>`;
-  const drawing1RelsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/></Relationships>`;
+  const drawing1Xml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><xdr:wsDr xmlns:xdr="http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing" xmlns:a="http://schemas.openxmlformats.org/drawingml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><xdr:twoCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRow0}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRowEnd0}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="2" name="Gráfico NVA SVA VAA"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId1"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor><xdr:twoCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRow1}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>15</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRowEnd1}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="3" name="Gráfico NVA 9 Macros"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId2"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor><xdr:twoCellAnchor><xdr:from><xdr:col>8</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRow2}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:from><xdr:to><xdr:col>22</xdr:col><xdr:colOff>0</xdr:colOff><xdr:row>${chartAnchorRowEnd2}</xdr:row><xdr:rowOff>0</xdr:rowOff></xdr:to><xdr:graphicFrame macro=""><xdr:nvGraphicFramePr><xdr:cNvPr id="4" name="Gráfico NVA 26 Vozes"/><xdr:cNvGraphicFramePr/></xdr:nvGraphicFramePr><xdr:xfrm><a:off x="0" y="0"/><a:ext cx="0" cy="0"/></xdr:xfrm><a:graphic><a:graphicData uri="http://schemas.openxmlformats.org/drawingml/2006/chart"><c:chart xmlns:c="http://schemas.openxmlformats.org/drawingml/2006/chart" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships" r:id="rId3"/></a:graphicData></a:graphic></xdr:graphicFrame><xdr:clientData/></xdr:twoCellAnchor></xdr:wsDr>`;
+  const drawing1RelsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart" Target="../charts/chart3.xml"/></Relationships>`;
   const sheet1RelsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/drawing" Target="../drawings/drawing1.xml"/></Relationships>`;
 
   // ── Package XMLs — 3 abas + gráfico de pizza na primeira aba ───────
   const wbXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><workbook xmlns="http://schemas.openxmlformats.org/spreadsheetml/2006/main" xmlns:r="http://schemas.openxmlformats.org/officeDocument/2006/relationships"><bookViews><workbookView xWindow="0" yWindow="0" windowWidth="16200" windowHeight="9600"/></bookViews><sheets><sheet name="${xe(sheetSummaryName)}" sheetId="1" r:id="rId1"/><sheet name="${xe(t('xlsx.sheet.segments'))}" sheetId="2" r:id="rId2"/><sheet name="${xe(t('xlsx.sheet.rawdata'))}" sheetId="3" r:id="rId3"/></sheets></workbook>`;
-  const ctXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>`;
+  const ctXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Types xmlns="http://schemas.openxmlformats.org/package/2006/content-types"><Default Extension="rels" ContentType="application/vnd.openxmlformats-package.relationships+xml"/><Default Extension="xml" ContentType="application/xml"/><Override PartName="/xl/workbook.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml"/><Override PartName="/xl/worksheets/sheet1.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet2.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/worksheets/sheet3.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml"/><Override PartName="/xl/sharedStrings.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.sharedStrings+xml"/><Override PartName="/xl/styles.xml" ContentType="application/vnd.openxmlformats-officedocument.spreadsheetml.styles+xml"/><Override PartName="/xl/drawings/drawing1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawing+xml"/><Override PartName="/xl/charts/chart1.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/charts/chart2.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/><Override PartName="/xl/charts/chart3.xml" ContentType="application/vnd.openxmlformats-officedocument.drawingml.chart+xml"/></Types>`;
   const relsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument" Target="xl/workbook.xml"/></Relationships>`;
   // Workbook rels: rId1=seg, rId2=res, rId3=raw, rId4=styles, rId5=strings
   const wbRelsXml=`<?xml version="1.0" encoding="UTF-8" standalone="yes"?><Relationships xmlns="http://schemas.openxmlformats.org/package/2006/relationships"><Relationship Id="rId1" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet1.xml"/><Relationship Id="rId2" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet2.xml"/><Relationship Id="rId3" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet" Target="worksheets/sheet3.xml"/><Relationship Id="rId4" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles" Target="styles.xml"/><Relationship Id="rId5" Type="http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings" Target="sharedStrings.xml"/></Relationships>`;
@@ -2323,6 +2482,8 @@ function exportMudaJSON(){
     {name:'xl/drawings/drawing1.xml', data:enc2.encode(drawing1Xml)},
     {name:'xl/drawings/_rels/drawing1.xml.rels', data:enc2.encode(drawing1RelsXml)},
     {name:'xl/charts/chart1.xml', data:enc2.encode(chart1Xml)},
+    {name:'xl/charts/chart2.xml', data:enc2.encode(chart2Xml)},
+    {name:'xl/charts/chart3.xml', data:enc2.encode(chart3Xml)},
   ]).then(zipBytes=>{
     const blob=new Blob([zipBytes],{type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
     const url=URL.createObjectURL(blob);
@@ -2462,9 +2623,21 @@ function printMudaReport(){
 // VIDEO
 // ═══════════════════════════════════════════════════
 function getFileName(url){if(!url)return'AnaliseSemVideo';const p=url.split(/[\\/]/);let n=p.pop();const qi=n.indexOf('?');if(qi!==-1)n=n.substring(0,qi);const di=n.lastIndexOf('.');if(di>0)n=n.substring(0,di);return n.replace(/%20/g,' ').trim()||'AnaliseSemVideo';}
-function loadFileFromObject(file){if(!file)return;videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando arquivo...</span>`;videoElement.style.display='none';videoPlaceholder.style.display='flex';resetTimer();setTimeout(()=>{try{videoElement.src=URL.createObjectURL(file);videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent=file.name;videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(file.name);buildMudaSegmentsFromLog();setTimeout(drawTimeline,200);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Arquivo corrompido.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO.</span>`;}},50);}
-function loadVideoFromUrl(){const url=videoUrlInput.value.trim();if(!url)return;videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando streaming...</span>`;videoElement.style.display='none';videoPlaceholder.style.display='flex';resetTimer();setTimeout(()=>{try{videoElement.src=url;videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent='Streaming carregado.';videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(url);buildMudaSegmentsFromLog();setTimeout(drawTimeline,200);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Verifique a URL.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO.</span>`;}},50);}
-function removeVideo(){if(videoElement.src){videoElement.pause();videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoStatus.textContent='Arraste um vídeo, use URL ou selecione arquivo.';videoInput.value='';resetTimer();}}
+function updateVideoNameBar(){
+  const el=document.getElementById('video-name-text');if(!el)return;
+  if(currentVideoFileName&&currentVideoFileName!=='AnaliseSemVideo'){
+    el.textContent=currentVideoFileName;
+    el.classList.remove('no-video');
+    el.removeAttribute('data-i18n');
+  } else {
+    el.setAttribute('data-i18n','video.name.none');
+    el.textContent=t('video.name.none');
+    el.classList.add('no-video');
+  }
+}
+function loadFileFromObject(file){if(!file)return;videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando arquivo...</span>`;videoElement.style.display='none';videoPlaceholder.style.display='flex';resetTimer();setTimeout(()=>{try{videoElement.src=URL.createObjectURL(file);videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent=file.name;videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(file.name);updateVideoNameBar();resetCycleDetectionState();buildMudaSegmentsFromLog();setTimeout(drawTimeline,200);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Arquivo corrompido.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO.</span>`;}},50);}
+function loadVideoFromUrl(){const url=videoUrlInput.value.trim();if(!url)return;videoStatus.innerHTML=`<span style="color:var(--accent-amber)">Carregando streaming...</span>`;videoElement.style.display='none';videoPlaceholder.style.display='flex';resetTimer();setTimeout(()=>{try{videoElement.src=url;videoElement.onloadeddata=()=>{videoElement.style.display='block';videoPlaceholder.style.display='none';videoStatus.textContent='Streaming carregado.';videoElement.onloadeddata=null;totalTime=0;updateDisplay();currentVideoFileName=getFileName(url);updateVideoNameBar();resetCycleDetectionState();buildMudaSegmentsFromLog();setTimeout(drawTimeline,200);};videoElement.onerror=()=>{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO: Verifique a URL.</span>`;videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoElement.onerror=null;};}catch{videoStatus.innerHTML=`<span style="color:var(--nva-color)">ERRO CRÍTICO.</span>`;}},50);}
+function removeVideo(){if(videoElement.src){videoElement.pause();videoElement.src='';videoElement.style.display='none';videoPlaceholder.style.display='flex';videoStatus.textContent='Arraste um vídeo, use URL ou selecione arquivo.';videoInput.value='';resetTimer();updateVideoNameBar();}}
 
 // ═══════════════════════════════════════════════════
 // EVENT LISTENERS
@@ -2529,6 +2702,311 @@ document.addEventListener('keydown',e=>{
 
 // Playhead animation loop
 (function phLoop(){if(!videoElement.paused&&videoElement.duration){const p=videoElement.currentTime/videoElement.duration;tlPlayhead.style.left=`${p*(tlContainer.offsetWidth||1)}px`;}requestAnimationFrame(phLoop);})();
+
+// ═══════════════════════════════════════════════════
+// DETECÇÃO INTELIGENTE DE CICLOS
+// IA local (MediaPipe Pose Landmarker) — roda inteiramente no navegador,
+// sem custo, sem chave de API, sem enviar o vídeo pra lugar nenhum.
+// Ideia: postos de linha repetem o mesmo ciclo de trabalho várias vezes.
+// A gente mede o "sinal de movimento" do operador ao longo do vídeo todo,
+// acha o período que mais se repete (autocorrelação) e usa isso pra
+// detectar onde cada ciclo começa/termina — daí o usuário classifica só
+// o primeiro ciclo, e o padrão é aplicado (como sugestão) nos demais.
+// ═══════════════════════════════════════════════════
+let poseLandmarkerInstance=null;
+let movementSignal=[];        // [{t:segundos, mag:número}]
+let detectedCycles=[];        // [{startSec,endSec,deviation}]
+let cycleDetectionCancelled=false;
+let cycleSampleIntervalSec=1.2; // intervalo de amostragem — equilíbrio entre precisão e velocidade
+
+async function initPoseLandmarker(){
+  if(poseLandmarkerInstance)return poseLandmarkerInstance;
+  const MP_VERSION='0.10.14';
+  const {PoseLandmarker,FilesetResolver}=await import(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}`);
+  const vision=await FilesetResolver.forVisionTasks(`https://cdn.jsdelivr.net/npm/@mediapipe/tasks-vision@${MP_VERSION}/wasm`);
+  poseLandmarkerInstance=await PoseLandmarker.createFromOptions(vision,{
+    baseOptions:{
+      modelAssetPath:'https://storage.googleapis.com/mediapipe-models/pose_landmarker/pose_landmarker_lite/float16/1/pose_landmarker_lite.task',
+      delegate:'GPU'
+    },
+    runningMode:'VIDEO',
+    numPoses:1,
+    minPoseDetectionConfidence:0.4,
+    minPosePresenceConfidence:0.4,
+    minTrackingConfidence:0.4
+  });
+  return poseLandmarkerInstance;
+}
+
+function seekVideoTo(sec){
+  return new Promise(resolve=>{
+    const onSeeked=()=>{videoElement.removeEventListener('seeked',onSeeked);resolve();};
+    videoElement.addEventListener('seeked',onSeeked);
+    videoElement.currentTime=sec;
+  });
+}
+
+async function analyzeVideoMovement(landmarker,duration,onProgress){
+  const signal=[];
+  let prevLandmarks=null;
+  const wasPaused=videoElement.paused;
+  videoElement.pause();
+  const nSamples=Math.max(2,Math.floor(duration/cycleSampleIntervalSec));
+  for(let i=0;i<nSamples;i++){
+    if(cycleDetectionCancelled)break;
+    const t=i*cycleSampleIntervalSec;
+    await seekVideoTo(Math.min(t,duration-0.05));
+    let mag=0;
+    try{
+      const result=landmarker.detectForVideo(videoElement,performance.now());
+      if(result&&result.landmarks&&result.landmarks.length>0){
+        const lm=result.landmarks[0];
+        if(prevLandmarks){
+          let sum=0,count=0;
+          for(let k=0;k<lm.length;k++){
+            const a=lm[k],b=prevLandmarks[k];
+            if((a.visibility===undefined||a.visibility>0.3)&&(b.visibility===undefined||b.visibility>0.3)){
+              sum+=Math.hypot(a.x-b.x,a.y-b.y);
+              count++;
+            }
+          }
+          mag=count>0?sum/count:0;
+        }
+        prevLandmarks=lm;
+      } else {
+        prevLandmarks=null;
+      }
+    }catch(e){ /* frame sem pose detectável — mag fica 0 */ }
+    signal.push({t,mag});
+    if(onProgress)onProgress(i+1,nSamples);
+    if(i%5===0)await new Promise(r=>setTimeout(r,0)); // libera a UI periodicamente
+  }
+  if(!wasPaused)videoElement.play().catch(()=>{});
+  return signal;
+}
+
+// ── Correlação de Pearson entre duas janelas de mesmo tamanho ──
+function correlate(a,b){
+  const n=Math.min(a.length,b.length);
+  if(n<3)return 0;
+  let ma=0,mb=0;
+  for(let i=0;i<n;i++){ma+=a[i];mb+=b[i];}
+  ma/=n;mb/=n;
+  let num=0,da=0,db=0;
+  for(let i=0;i<n;i++){
+    const xa=a[i]-ma,xb=b[i]-mb;
+    num+=xa*xb;da+=xa*xa;db+=xb*xb;
+  }
+  const den=Math.sqrt(da*db);
+  return den>1e-9?num/den:0;
+}
+
+function detectCyclesFromSignal(signal,duration){
+  if(signal.length<8)return [];
+  const dt=cycleSampleIntervalSec;
+  const mags=signal.map(s=>s.mag);
+  const n=mags.length;
+  // autocorrelação normalizada pra achar o período dominante
+  const minLagSec=6, maxLagSec=Math.min(duration/2.2,240);
+  const minLag=Math.max(1,Math.round(minLagSec/dt)), maxLag=Math.round(maxLagSec/dt);
+  if(maxLag<=minLag)return [];
+  const mean=mags.reduce((a,b)=>a+b,0)/n;
+  const centered=mags.map(m=>m-mean);
+  const r=[];
+  for(let lag=minLag;lag<=maxLag;lag++){
+    let s=0;
+    for(let i=0;i<n-lag;i++)s+=centered[i]*centered[i+lag];
+    r.push({lag,val:s});
+  }
+  // acha o maior máximo local (evita pegar só a borda)
+  let best=null;
+  for(let i=1;i<r.length-1;i++){
+    if(r[i].val>r[i-1].val&&r[i].val>=r[i+1].val){
+      if(!best||r[i].val>best.val)best=r[i];
+    }
+  }
+  if(!best)best=r.reduce((a,b)=>b.val>a.val?b:a,r[0]);
+  const periodSec=best.lag*dt;
+  if(periodSec<minLagSec)return [];
+
+  const nCycles=Math.floor(duration/periodSec);
+  if(nCycles<2)return [];
+
+  // janela de referência = primeiro ciclo (0..periodSec)
+  const refWindow=mags.slice(0,Math.round(periodSec/dt));
+  const cycles=[];
+  for(let k=0;k<nCycles;k++){
+    let boundaryStart=k*periodSec;
+    if(k>0){
+      // refina a borda buscando o deslocamento (±15% do período) que melhor alinha com o ciclo de referência
+      const searchRangeSec=periodSec*0.15;
+      const stepSec=dt;
+      let bestShift=0,bestCorr=-2;
+      for(let sh=-searchRangeSec;sh<=searchRangeSec;sh+=stepSec){
+        const startIdx=Math.round((boundaryStart+sh)/dt);
+        const win=mags.slice(startIdx,startIdx+refWindow.length);
+        if(win.length<refWindow.length*0.8)continue;
+        const c=correlate(refWindow,win);
+        if(c>bestCorr){bestCorr=c;bestShift=sh;}
+      }
+      boundaryStart+=bestShift;
+    }
+    const boundaryEnd=Math.min(boundaryStart+periodSec,duration);
+    const startIdx=Math.round(boundaryStart/dt);
+    const win=mags.slice(startIdx,startIdx+refWindow.length);
+    const corr=k===0?1:correlate(refWindow,win);
+    cycles.push({startSec:Math.max(0,boundaryStart),endSec:boundaryEnd,deviation:1-Math.max(-1,Math.min(1,corr))});
+  }
+  // garante continuidade (sem sobreposição/lacuna entre ciclos)
+  for(let k=1;k<cycles.length;k++){
+    cycles[k].startSec=cycles[k-1].endSec;
+  }
+  cycles[cycles.length-1].endSec=duration;
+  return cycles;
+}
+
+async function startCycleDetection(){
+  if(!videoElement.src||!videoElement.duration){alert(t('cycle.error.noVideo'));return;}
+  cycleDetectionCancelled=false;
+  const btn=document.getElementById('btn-analyze-cycles');
+  const progWrap=document.getElementById('cycle-progress-wrap');
+  const progFill=document.getElementById('cycle-progress-fill');
+  const progText=document.getElementById('cycle-progress-text');
+  const results=document.getElementById('cycle-results');
+  btn.disabled=true;btn.style.opacity='.5';
+  progWrap.style.display='block';results.style.display='none';
+  progFill.style.width='2%';progText.textContent=t('cycle.progress.loading');
+  let landmarker;
+  try{
+    landmarker=await initPoseLandmarker();
+  }catch(e){
+    console.error(e);
+    alert(t('cycle.error.generic'));
+    btn.disabled=false;btn.style.opacity='1';progWrap.style.display='none';
+    return;
+  }
+  if(cycleDetectionCancelled){btn.disabled=false;btn.style.opacity='1';progWrap.style.display='none';return;}
+  const duration=videoElement.duration;
+  const savedTime=videoElement.currentTime;
+  progText.textContent=t('cycle.progress.analyzing');
+  movementSignal=await analyzeVideoMovement(landmarker,duration,(done,total)=>{
+    const pct=Math.round((done/total)*100);
+    progFill.style.width=pct+'%';
+    progText.textContent=`${t('cycle.progress.analyzing')} ${pct}%`;
+  });
+  videoElement.currentTime=savedTime;
+  btn.disabled=false;btn.style.opacity='1';progWrap.style.display='none';
+  if(cycleDetectionCancelled){cycleDetectionCancelled=false;return;}
+  detectedCycles=detectCyclesFromSignal(movementSignal,duration);
+  results.style.display='block';
+  renderCycleSummary();
+  renderCycleMarkers();
+  renderCycleList();
+}
+function cancelCycleDetection(){cycleDetectionCancelled=true;}
+
+function renderCycleSummary(){
+  const el=document.getElementById('cycle-summary');
+  if(detectedCycles.length===0){
+    el.textContent=t('cycle.summary.none');
+    document.getElementById('btn-apply-template').disabled=true;
+    return;
+  }
+  const avgDur=detectedCycles.reduce((a,c)=>a+(c.endSec-c.startSec),0)/detectedCycles.length;
+  el.textContent=t('cycle.summary').replace('%n',detectedCycles.length).replace('%d',formatSec(Math.round(avgDur)));
+  updateApplyButtonState();
+}
+function updateApplyButtonState(){
+  const btn=document.getElementById('btn-apply-template');
+  if(!btn||detectedCycles.length<2){if(btn)btn.disabled=true;return;}
+  const cyc1=detectedCycles[0];
+  const hasCycle1Data=mudaSegments.some(s=>s.voice&&s.startSec<cyc1.endSec&&s.endSec>cyc1.startSec);
+  btn.disabled=!hasCycle1Data;
+  const span=btn.querySelector('span');
+  if(span)span.textContent=hasCycle1Data?t('cycle.btn.apply.ready'):t('cycle.btn.apply');
+}
+function renderCycleMarkers(){
+  const strip=document.getElementById('cycle-marker-strip');
+  strip.innerHTML='';
+  strip.classList.toggle('visible',detectedCycles.length>0);
+  if(detectedCycles.length===0)return;
+  const duration=videoElement.duration||detectedCycles[detectedCycles.length-1].endSec;
+  detectedCycles.forEach((c,i)=>{
+    const pct=(c.startSec/duration)*100;
+    const marker=document.createElement('div');
+    marker.className='cycle-marker';
+    marker.style.left=pct+'%';
+    strip.appendChild(marker);
+    if(i%Math.max(1,Math.ceil(detectedCycles.length/12))===0){
+      const label=document.createElement('div');
+      label.className='cycle-marker-label';
+      label.style.left=pct+'%';
+      label.textContent=(i+1);
+      strip.appendChild(label);
+    }
+  });
+}
+function renderCycleList(){
+  const list=document.getElementById('cycle-list');
+  if(detectedCycles.length===0){list.innerHTML='';return;}
+  list.innerHTML=detectedCycles.map((c,i)=>{
+    const needsReview=i>0&&c.deviation>0.4;
+    return `<div class="cycle-list-item" onclick="jumpToCycle(${i})">
+      <span>Ciclo ${i+1} — ${formatSec(c.startSec)}–${formatSec(c.endSec)}</span>
+      <span class="${needsReview?'cy-review':'cy-ok'}">${i===0?'':(needsReview?t('cycle.item.review'):t('cycle.item.ok'))}</span>
+    </div>`;
+  }).join('');
+}
+function jumpToCycle(idx){
+  if(idx<0||idx>=detectedCycles.length)return;
+  const c=detectedCycles[idx];
+  if(videoElement.readyState>=1)videoElement.currentTime=c.startSec;
+  const segIdx=mudaSegments.findIndex(s=>s.startSec>=c.startSec&&s.startSec<c.endSec);
+  if(segIdx>=0)selectMudaSegment(segIdx);
+}
+
+async function applyCycleTemplate(){
+  if(detectedCycles.length<2)return;
+  const cyc1=detectedCycles[0];
+  const templateSegs=mudaSegments.filter(s=>s.startSec<cyc1.endSec&&s.endSec>cyc1.startSec&&s.voice)
+    .map(s=>({
+      relStart:(Math.max(s.startSec,cyc1.startSec)-cyc1.startSec)/(cyc1.endSec-cyc1.startSec),
+      relEnd:(Math.min(s.endSec,cyc1.endSec)-cyc1.startSec)/(cyc1.endSec-cyc1.startSec),
+      category:s.category,voice:s.voice,macroVoice:s.macroVoice
+    }));
+  if(templateSegs.length===0){alert(t('cycle.needFirstCycle'));return;}
+  if(!window.confirm(t('cycle.confirm.apply').replace('%n',detectedCycles.length-1)))return;
+
+  // Remove segmentos existentes que caem dentro dos ciclos 2..N (serão substituídos)
+  const rangeStart=detectedCycles[1].startSec;
+  const kept=mudaSegments.filter(s=>s.endSec<=rangeStart||s.startSec>=detectedCycles[detectedCycles.length-1].endSec||s.startSec<cyc1.endSec);
+  const newSegs=[];
+  for(let k=1;k<detectedCycles.length;k++){
+    const c=detectedCycles[k];
+    const cDur=c.endSec-c.startSec;
+    templateSegs.forEach(ts=>{
+      const s=c.startSec+ts.relStart*cDur;
+      const e=c.startSec+ts.relEnd*cDur;
+      if(e>s)newSegs.push({startSec:s,endSec:e,category:ts.category,voice:ts.voice,macroVoice:ts.macroVoice,steps:0});
+    });
+  }
+  let merged=[...kept,...newSegs].sort((a,b)=>a.startSec-b.startSec);
+  // preenche eventuais lacunas entre segmentos consecutivos (garante timeline contínua)
+  for(let i=1;i<merged.length;i++){
+    if(merged[i].startSec>merged[i-1].endSec+0.05){
+      merged.splice(i,0,{startSec:merged[i-1].endSec,endSec:merged[i].startSec,category:merged[i-1].category,voice:null,macroVoice:null,steps:0});
+      i++;
+    }
+  }
+  mudaSegments=merged;
+  selectedMudaSegIdx=-1;
+  rebuildTimesFromMuda();
+  renderMudaSegmentList();
+  drawTimeline();
+  saveMudaState();
+  alert(t('cycle.applied'));
+}
+
 
 // ═══════════════════════════════════════════════════
 // INIT
